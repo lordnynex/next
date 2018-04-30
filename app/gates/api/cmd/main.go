@@ -1,15 +1,13 @@
 package main
 
 import (
-	"net/http"
 	"time"
-
-	"github.com/go-chi/render"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
 	"github.com/sknv/upsale/app/gates/api/cfg"
+	"github.com/sknv/upsale/app/gates/api/controllers"
 	xmiddleware "github.com/sknv/upsale/app/lib/middleware"
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
 )
@@ -26,18 +24,15 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(xmiddleware.Recoverer)
 
-	router.Get("/hello", hello)
-	router.Get("/abort", abort)
-
+	routeApp(router)
 	xhttp.ListenAndServe(addr, router, shutdownTimeout)
 }
 
-func hello(w http.ResponseWriter, r *http.Request) {
-	render.JSON(w, r, render.M{"name": "User"})
+func routeApp(router chi.Router) {
+	routeSession(router)
 }
 
-func abort(w http.ResponseWriter, r *http.Request) {
-	render.Status(r, http.StatusUnauthorized)
-	render.JSON(w, r, render.M{"error": "Unauthorized"})
-	xhttp.AbortHandler()
+func routeSession(router chi.Router) {
+	session := controllers.NewSessionController()
+	router.Post("/login", session.Login)
 }
