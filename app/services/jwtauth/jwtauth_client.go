@@ -21,10 +21,10 @@ func NewJWTAuthClient() JWTAuth {
 	return &JWTAuthClient{JWTAuth: initializers.NewJWTAuth()}
 }
 
-func (j *JWTAuthClient) Encode(_ context.Context, r *EncodeRequest) (*EncodeResponse, error) {
+func (c *JWTAuthClient) Encode(_ context.Context, r *EncodeRequest) (*EncodeResponse, error) {
 	r.Payload["exp"] = time.Now().Add(exp).Unix()
 
-	_, tokenString, err := j.JWTAuth.Encode(r.Payload)
+	_, tokenString, err := c.JWTAuth.Encode(r.Payload)
 	if err != nil {
 		return nil, err
 	}

@@ -17,16 +17,16 @@ func NewSessionClient() Session {
 	return &SessionClient{JWTAuthClient: xjwtauth.NewJWTAuthClient()}
 }
 
-func (s *SessionClient) Login(ctx context.Context, r *LoginRequest) (*LoginResponse, error) {
+func (c *SessionClient) Login(ctx context.Context, r *LoginRequest) (*LoginResponse, error) {
 	r.Login = strings.TrimSpace(r.Login)
 	if r.Login != "login" {
 		return nil, errors.New("user is not authenticated")
 	}
 
 	sessionID := "123qwe"
-	encodeResponse, err := s.JWTAuthClient.Encode(
+	encodeResponse, err := c.JWTAuthClient.Encode(
 		ctx, &xjwtauth.EncodeRequest{
-			Payload: jwtauth.Claims{"sub": sessionID},
+			Payload: jwtauth.Claims{ClaimSessionID: sessionID},
 		},
 	)
 	if err != nil {

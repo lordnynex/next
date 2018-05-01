@@ -4,6 +4,10 @@ import (
 	"context"
 )
 
+const (
+	ClaimSessionID = "sub"
+)
+
 type (
 	Session interface {
 		Login(context.Context, *LoginRequest) (*LoginResponse, error)

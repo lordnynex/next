@@ -25,8 +25,7 @@ func (s *Session) Login(w http.ResponseWriter, r *http.Request) {
 	loginResponse, err := s.SessionClient.Login(context.Background(), loginRequest)
 	if err != nil {
 		log.Print("error [login]: ", err)
-		render.Status(r, http.StatusUnauthorized)
-		render.PlainText(w, r, http.StatusText(http.StatusUnauthorized))
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		xhttp.AbortHandler()
 	}
 
@@ -38,8 +37,8 @@ func (*Session) decodeLoginRequest(w http.ResponseWriter, r *http.Request) *sess
 	loginRequest := &session.LoginRequest{}
 	err := render.DecodeJSON(r.Body, loginRequest)
 	if err != nil {
-		render.Status(r, http.StatusBadRequest)
-		render.PlainText(w, r, http.StatusText(http.StatusBadRequest))
+		log.Print("error [decodeLoginRequest]: ", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		xhttp.AbortHandler()
 	}
 	return loginRequest

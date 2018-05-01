@@ -38,7 +38,8 @@ func routeSession(router chi.Router) {
 func routeGreeter(router chi.Router) {
 	greeter := controllers.NewGreeter()
 	router.Route("/greeter", func(r chi.Router) {
-		utils.RequireJWT(r)
+		utils.RequireLogin(r)
+
 		r.Get("/hello", greeter.Hello)
 	})
 }
