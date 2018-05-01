@@ -20,5 +20,5 @@ func RequireJWT(router chi.Router) {
 
 func RequireLogin(router chi.Router) {
 	RequireJWT(router)
-	router.Use(cmiddleware.SessionVerifier)
+	router.Use(cmiddleware.CurrentUserVerifier)
 }

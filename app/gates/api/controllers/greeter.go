@@ -6,20 +6,20 @@ import (
 
 	"github.com/go-chi/render"
 
-	"github.com/sknv/upsale/app/services/session"
+	"github.com/sknv/upsale/app/services/auth"
 )
 
 type Greeter struct {
-	SessionClient session.Session
+	AuthClient auth.Auth
 }
 
 func NewGreeter() *Greeter {
-	return &Greeter{SessionClient: session.NewSessionClient()}
+	return &Greeter{AuthClient: auth.NewAuthClient()}
 }
 
 func (g *Greeter) Hello(w http.ResponseWriter, r *http.Request) {
-	userIDResponse, _ := g.SessionClient.GetUserID(
-		context.Background(), &session.GetUserIDRequest{Context: r.Context()},
+	currentUserResponse, _ := g.AuthClient.GetCurrentUser(
+		context.Background(), &auth.GetCurrentUserRequest{Context: r.Context()},
 	)
-	render.JSON(w, r, render.M{"hello": userIDResponse.UserID})
+	render.JSON(w, r, render.M{"hello": currentUserResponse.User.Username})
 }

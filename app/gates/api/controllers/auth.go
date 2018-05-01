@@ -8,21 +8,21 @@ import (
 	"github.com/go-chi/render"
 
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
-	"github.com/sknv/upsale/app/services/session"
+	"github.com/sknv/upsale/app/services/auth"
 )
 
-type Session struct {
-	SessionClient session.Session
+type Auth struct {
+	AuthClient auth.Auth
 }
 
-func NewSession() *Session {
-	return &Session{SessionClient: session.NewSessionClient()}
+func NewAuth() *Auth {
+	return &Auth{AuthClient: auth.NewAuthClient()}
 }
 
-func (s *Session) Login(w http.ResponseWriter, r *http.Request) {
+func (s *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	loginRequest := s.decodeLoginRequest(w, r)
 
-	loginResponse, err := s.SessionClient.Login(context.Background(), loginRequest)
+	loginResponse, err := s.AuthClient.Login(context.Background(), loginRequest)
 	if err != nil {
 		log.Print("error [login]: ", err)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
@@ -33,8 +33,8 @@ func (s *Session) Login(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, loginResponse)
 }
 
-func (*Session) decodeLoginRequest(w http.ResponseWriter, r *http.Request) *session.LoginRequest {
-	loginRequest := &session.LoginRequest{}
+func (*Auth) decodeLoginRequest(w http.ResponseWriter, r *http.Request) *auth.LoginRequest {
+	loginRequest := &auth.LoginRequest{}
 	err := render.DecodeJSON(r.Body, loginRequest)
 	if err != nil {
 		log.Print("error [decodeLoginRequest]: ", err)

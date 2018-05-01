@@ -26,13 +26,13 @@ func main() {
 }
 
 func route(router chi.Router) {
-	routeSession(router)
+	routeAuth(router)
 	routeGreeter(router)
 }
 
-func routeSession(router chi.Router) {
-	session := controllers.NewSession()
-	router.Post("/login", session.Login)
+func routeAuth(router chi.Router) {
+	auth := controllers.NewAuth()
+	router.Post("/login", auth.Login)
 }
 
 func routeGreeter(router chi.Router) {
