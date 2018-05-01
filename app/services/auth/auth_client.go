@@ -49,7 +49,9 @@ func (c *AuthClient) Login(_ context.Context, r *LoginRequest) (*LoginResponse, 
 
 func (c *AuthClient) GetCurrentUser(_ context.Context, r *GetCurrentUserRequest,
 ) (*CurrentUserResponse, error) {
-	user, err := c.UserRepo.FindOneByID("qwe123")
+	_, claims, _ := jwtauth.FromContext(r.Context)
+	userID := claims["sub"].(string)
+	user, err := c.UserRepo.FindOneByID(userID)
 	if err != nil {
 		return nil, err
 	}
