@@ -1,19 +1,25 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 
-	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
+
+	"github.com/sknv/upsale/app/services/session"
 )
 
-type Greeter struct{}
-
-func NewGreeter() *Greeter {
-	return &Greeter{}
+type Greeter struct {
+	SessionClient session.Session
 }
 
-func (*Greeter) Hello(w http.ResponseWriter, r *http.Request) {
-	_, claims, _ := jwtauth.FromContext(r.Context())
-	render.JSON(w, r, render.M{"hello": claims["sub"]})
+func NewGreeter() *Greeter {
+	return &Greeter{SessionClient: session.NewSessionClient()}
+}
+
+func (g *Greeter) Hello(w http.ResponseWriter, r *http.Request) {
+	userIDResponse, _ := g.SessionClient.GetUserID(
+		context.Background(), &session.GetUserIDRequest{Context: r.Context()},
+	)
+	render.JSON(w, r, render.M{"hello": userIDResponse.UserID})
 }
