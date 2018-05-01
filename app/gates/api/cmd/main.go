@@ -22,15 +22,15 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger, middleware.Recoverer, xmiddleware.Recoverer)
 
-	routeApp(router)
+	route(router)
 	xhttp.ListenAndServe(addr, router, shutdownTimeout)
 }
 
-func routeApp(router chi.Router) {
+func route(router chi.Router) {
 	routeSession(router)
 }
 
 func routeSession(router chi.Router) {
-	session := controllers.NewSessionController()
+	session := controllers.NewSession()
 	router.Post("/login", session.Login)
 }

@@ -6,22 +6,25 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
+	"github.com/sknv/upsale/app/core/cfg"
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
 	"github.com/sknv/upsale/app/services/session"
 )
 
-type SessionController struct {
-	sessionClient session.Session
+type Session struct {
+	SessionClient session.Session
 }
 
-func NewSessionController() *SessionController {
-	return &SessionController{sessionClient: session.NewSessionClient()}
+func NewSession() *Session {
+	return &Session{
+		SessionClient: session.NewSessionClient(cfg.GetSecretKey()),
+	}
 }
 
-func (s *SessionController) Login(w http.ResponseWriter, r *http.Request) {
+func (s *Session) Login(w http.ResponseWriter, r *http.Request) {
 	loginRequest := s.decodeLoginRequest(w, r)
 
-	loginResponse, err := s.sessionClient.Login(context.Background(), loginRequest)
+	loginResponse, err := s.SessionClient.Login(context.Background(), loginRequest)
 	if err != nil {
 		log.Print("error [login]: ", err)
 		w.WriteHeader(http.StatusUnauthorized)
@@ -32,8 +35,7 @@ func (s *SessionController) Login(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, loginResponse)
 }
 
-func (*SessionController) decodeLoginRequest(w http.ResponseWriter, r *http.Request,
-) *session.LoginRequest {
+func (*Session) decodeLoginRequest(w http.ResponseWriter, r *http.Request) *session.LoginRequest {
 	loginRequest := &session.LoginRequest{}
 	err := render.DecodeJSON(r.Body, loginRequest)
 	if err != nil {
