@@ -9,11 +9,15 @@ import (
 	"github.com/go-chi/jwtauth"
 
 	"github.com/sknv/upsale/app/core/initializers"
+	"github.com/sknv/upsale/app/core/models"
 	"github.com/sknv/upsale/app/core/repositories"
 )
 
+type contextKey string
+
 const (
-	exp = 90 * 24 * time.Hour // Expires in 90 days.
+	contextKeyCurrentUser = contextKey("_auth.CurrentUser")
+	exp                   = 90 * 24 * time.Hour // Expires in 90 days.
 )
 
 type AuthClient struct {
@@ -49,11 +53,22 @@ func (c *AuthClient) Login(_ context.Context, r *LoginRequest) (*LoginResponse, 
 
 func (c *AuthClient) GetCurrentUser(_ context.Context, r *GetCurrentUserRequest,
 ) (*CurrentUserResponse, error) {
-	_, claims, _ := jwtauth.FromContext(r.Context)
+	currentUser := r.Request.Context().Value(contextKeyCurrentUser)
+	if currentUser != nil {
+		currentUser := currentUser.(*models.User)
+		return &CurrentUserResponse{User: currentUser}, nil
+	}
+
+	_, claims, _ := jwtauth.FromContext(r.Request.Context())
 	userID := claims["sub"].(string)
 	user, err := c.UserRepo.FindOneByID(userID)
 	if err != nil {
 		return nil, err
 	}
+
+	// Cache current user.
+	*r.Request = *r.Request.WithContext(
+		context.WithValue(r.Request.Context(), contextKeyCurrentUser, user),
+	)
 	return &CurrentUserResponse{User: user}, nil
 }

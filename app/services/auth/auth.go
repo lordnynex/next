@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/sknv/upsale/app/core/models"
 )
@@ -21,7 +22,7 @@ type (
 	}
 
 	GetCurrentUserRequest struct {
-		Context context.Context
+		Request *http.Request
 	}
 
 	CurrentUserResponse struct {

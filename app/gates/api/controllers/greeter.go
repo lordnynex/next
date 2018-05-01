@@ -19,7 +19,7 @@ func NewGreeter() *Greeter {
 
 func (g *Greeter) Hello(w http.ResponseWriter, r *http.Request) {
 	currentUserResponse, _ := g.AuthClient.GetCurrentUser(
-		context.Background(), &auth.GetCurrentUserRequest{Context: r.Context()},
+		context.Background(), &auth.GetCurrentUserRequest{Request: r},
 	)
 	render.JSON(w, r, render.M{"hello": currentUserResponse.User.Username})
 }
