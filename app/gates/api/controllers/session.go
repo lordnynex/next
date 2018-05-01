@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
-	"github.com/sknv/upsale/app/core/cfg"
+
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
 	"github.com/sknv/upsale/app/services/session"
 )
@@ -16,9 +16,7 @@ type Session struct {
 }
 
 func NewSession() *Session {
-	return &Session{
-		SessionClient: session.NewSessionClient(cfg.GetSecretKey()),
-	}
+	return &Session{SessionClient: session.NewSessionClient()}
 }
 
 func (s *Session) Login(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +25,8 @@ func (s *Session) Login(w http.ResponseWriter, r *http.Request) {
 	loginResponse, err := s.SessionClient.Login(context.Background(), loginRequest)
 	if err != nil {
 		log.Print("error [login]: ", err)
-		w.WriteHeader(http.StatusUnauthorized)
+		render.Status(r, http.StatusUnauthorized)
+		render.PlainText(w, r, http.StatusText(http.StatusUnauthorized))
 		xhttp.AbortHandler()
 	}
 
@@ -39,7 +38,8 @@ func (*Session) decodeLoginRequest(w http.ResponseWriter, r *http.Request) *sess
 	loginRequest := &session.LoginRequest{}
 	err := render.DecodeJSON(r.Body, loginRequest)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		render.Status(r, http.StatusBadRequest)
+		render.PlainText(w, r, http.StatusText(http.StatusBadRequest))
 		xhttp.AbortHandler()
 	}
 	return loginRequest

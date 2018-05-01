@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/go-chi/jwtauth"
+
+	"github.com/sknv/upsale/app/core/initializers"
 )
 
 const (
-	alg = "HS256"
 	exp = 180 * 24 * time.Hour // Expires in 180 days.
 )
 
@@ -16,8 +17,8 @@ type JWTAuthClient struct {
 	JWTAuth *jwtauth.JWTAuth
 }
 
-func NewJWTAuthClient(secretKey string) JWTAuth {
-	return &JWTAuthClient{JWTAuth: jwtauth.New(alg, []byte(secretKey), nil)}
+func NewJWTAuthClient() JWTAuth {
+	return &JWTAuthClient{JWTAuth: initializers.NewJWTAuth()}
 }
 
 func (j *JWTAuthClient) Encode(_ context.Context, r *EncodeRequest) (*EncodeResponse, error) {

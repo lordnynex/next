@@ -13,10 +13,8 @@ type SessionClient struct {
 	JWTAuthClient xjwtauth.JWTAuth
 }
 
-func NewSessionClient(secretKey string) Session {
-	return &SessionClient{
-		JWTAuthClient: xjwtauth.NewJWTAuthClient(secretKey),
-	}
+func NewSessionClient() Session {
+	return &SessionClient{JWTAuthClient: xjwtauth.NewJWTAuthClient()}
 }
 
 func (s *SessionClient) Login(ctx context.Context, r *LoginRequest) (*LoginResponse, error) {

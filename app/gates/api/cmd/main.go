@@ -4,11 +4,10 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 
+	"github.com/sknv/upsale/app/core/utils"
 	"github.com/sknv/upsale/app/gates/api/cfg"
 	"github.com/sknv/upsale/app/gates/api/controllers"
-	xmiddleware "github.com/sknv/upsale/app/lib/middleware"
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
 )
 
@@ -20,7 +19,7 @@ func main() {
 	addr := cfg.GetAddr()
 
 	router := chi.NewRouter()
-	router.Use(middleware.Logger, middleware.Recoverer, xmiddleware.Recoverer)
+	utils.UseDefaultMiddleware(router)
 
 	route(router)
 	xhttp.ListenAndServe(addr, router, shutdownTimeout)
@@ -28,9 +27,18 @@ func main() {
 
 func route(router chi.Router) {
 	routeSession(router)
+	routeGreeter(router)
 }
 
 func routeSession(router chi.Router) {
 	session := controllers.NewSession()
 	router.Post("/login", session.Login)
+}
+
+func routeGreeter(router chi.Router) {
+	greeter := controllers.NewGreeter()
+	router.Route("/greeter", func(r chi.Router) {
+		utils.RequireJWT(r)
+		r.Get("/hello", greeter.Hello)
+	})
 }
