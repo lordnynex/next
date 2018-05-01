@@ -1,27 +1,27 @@
 package middleware
 
 import (
+	"context"
 	"log"
 	"net/http"
 
-	"github.com/go-chi/jwtauth"
-
-	"github.com/sknv/upsale/app/core/repositories"
+	"github.com/sknv/upsale/app/lib/net/rpc"
 	"github.com/sknv/upsale/app/services/session"
 )
 
 func SessionVerifier(next http.Handler) http.Handler {
+	sessionClient := session.NewSessionClient()
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		_, claims, _ := jwtauth.FromContext(r.Context())
-		sessionID, ok := claims[session.ClaimSessionID].(string)
-		if !ok {
-			log.Print("error [verify session]: session id does not exist in jwt claims")
+		idResponse, err := sessionClient.IDFromContext(r.Context(), &rpc.Empty{})
+		if err != nil {
+			log.Print("error [verify session]: ", err)
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}
 
-		sessionRepo := &repositories.Session{}
-		_, err := sessionRepo.FindOneByID(sessionID)
+		_, err = sessionClient.FindOneByID(
+			context.Background(), &session.FindOneByIDRequest{ID: idResponse.SessionID},
+		)
 		if err != nil {
 			log.Print("error [verify session]: ", err)
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
