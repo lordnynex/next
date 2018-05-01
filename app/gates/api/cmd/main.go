@@ -20,9 +20,7 @@ func main() {
 	addr := cfg.GetAddr()
 
 	router := chi.NewRouter()
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
-	router.Use(xmiddleware.Recoverer)
+	router.Use(middleware.Logger, middleware.Recoverer, xmiddleware.Recoverer)
 
 	routeApp(router)
 	xhttp.ListenAndServe(addr, router, shutdownTimeout)

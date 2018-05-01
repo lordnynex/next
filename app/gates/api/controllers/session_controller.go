@@ -28,11 +28,11 @@ func (s *SessionController) Login(w http.ResponseWriter, r *http.Request) {
 		xhttp.AbortHandler()
 	}
 
+	render.Status(r, http.StatusCreated)
 	render.JSON(w, r, loginResponse)
 }
 
-func (_ *SessionController) decodeLoginRequest(
-	w http.ResponseWriter, r *http.Request,
+func (*SessionController) decodeLoginRequest(w http.ResponseWriter, r *http.Request,
 ) *session.LoginRequest {
 	loginRequest := &session.LoginRequest{}
 	err := render.DecodeJSON(r.Body, loginRequest)

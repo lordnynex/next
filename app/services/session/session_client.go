@@ -11,9 +11,7 @@ func NewSessionClient() Session {
 	return &SessionClient{}
 }
 
-func (s *SessionClient) Login(
-	ctx context.Context, r *LoginRequest,
-) (*LoginResponse, error) {
+func (*SessionClient) Login(_ context.Context, r *LoginRequest) (*LoginResponse, error) {
 	if r.Login != "login" {
 		return nil, errors.New("user is not authenticated")
 	}
