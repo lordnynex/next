@@ -26,13 +26,16 @@ func main() {
 }
 
 func route(router chi.Router) {
-	routeAuth(router)
+	routeAuthSession(router)
 	routeGreeter(router)
 }
 
-func routeAuth(router chi.Router) {
-	session := controllers.NewSession()
-	router.Post("/login", session.Login)
+func routeAuthSession(router chi.Router) {
+	authSession := controllers.NewAuthSession()
+	router.Route("/authsession", func(r chi.Router) {
+		r.Post("/create", authSession.Create)
+		r.Post("/login", authSession.Login)
+	})
 }
 
 func routeGreeter(router chi.Router) {

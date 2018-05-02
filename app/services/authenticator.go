@@ -14,7 +14,7 @@ import (
 type contextKey string
 
 const (
-	contextKeyCurrentUser = contextKey("_auth.CurrentUser")
+	contextKeyCurrentUser = contextKey("authenticator.currentuser")
 )
 
 type Authenticator struct {
@@ -25,7 +25,8 @@ func NewAuthenticator() *Authenticator {
 	return &Authenticator{Users: records.NewUser()}
 }
 
-func (a *Authenticator) GetCurrentUser(_ context.Context, r *http.Request) (*models.User, error) {
+func (a *Authenticator) GetCurrentUser(_ context.Context, r *http.Request,
+) (*models.User, error) {
 	currentUser := r.Context().Value(contextKeyCurrentUser)
 	if currentUser != nil {
 		currentUser := currentUser.(*models.User)
@@ -38,7 +39,7 @@ func (a *Authenticator) GetCurrentUser(_ context.Context, r *http.Request) (*mod
 		return nil, errors.New("sub claim is empty or not a string")
 	}
 
-	user, err := a.Users.FindOneByID(userID)
+	user, err := a.Users.FindOneByID(nil, userID)
 	if err != nil {
 		return nil, err
 	}

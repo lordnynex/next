@@ -3,6 +3,8 @@ package records
 import (
 	"errors"
 
+	"github.com/globalsign/mgo"
+
 	"github.com/sknv/upsale/app/core/models"
 )
 
@@ -12,9 +14,9 @@ func NewUser() *User {
 	return &User{}
 }
 
-func (*User) FindOneByID(id string) (*models.User, error) {
-	if id != "qwe123" {
+func (*User) FindOneByID(_ *mgo.Session, id string) (*models.User, error) {
+	if id != "abc123" {
 		return nil, errors.New("user does not exist")
 	}
-	return &models.User{ID: "qwe123", Username: "login"}, nil
+	return &models.User{ID: "abc123", Email: "user@example.com"}, nil
 }

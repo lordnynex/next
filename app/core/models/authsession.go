@@ -2,10 +2,9 @@ package models
 
 import "time"
 
-type User struct {
+type AuthSession struct {
 	ID        string    `json:"id"`
-	Email     string    `json:"email"`
-	Name      string    `json:"name"`
+	Email     string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
