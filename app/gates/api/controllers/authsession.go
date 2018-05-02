@@ -21,8 +21,7 @@ func NewAuthSession() *AuthSession {
 
 func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 	createRequest := a.decodeCreateRequest(w, r)
-	_, err := a.Keeper.CreateAuthSession(context.Background(), createRequest)
-	if err != nil {
+	if _, err := a.Keeper.CreateAuthSession(context.Background(), createRequest); err != nil {
 		if err != services.ErrUserDoesNotExist {
 			panic(err)
 		}

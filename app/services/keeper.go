@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sknv/upsale/app/lib/net/rpc/proto"
-
 	"github.com/go-chi/jwtauth"
 
 	"github.com/sknv/upsale/app/core/initializers"
 	"github.com/sknv/upsale/app/core/models"
+	"github.com/sknv/upsale/app/core/records"
+	"github.com/sknv/upsale/app/lib/net/rpc/proto"
 )
 
 const (
@@ -25,7 +25,8 @@ var (
 
 type (
 	Keeper struct {
-		JWTAuth *jwtauth.JWTAuth
+		AuthSessions *records.AuthSession
+		JWTAuth      *jwtauth.JWTAuth
 	}
 
 	CreateAuthSessionRequest struct {
@@ -33,22 +34,24 @@ type (
 	}
 
 	LoginRequest struct {
-		Login string
+		AuthSessionID string `json:"auth_session_id"`
 	}
 
 	LoginResponse struct {
-		Token string `json:"token"`
+		AuthToken string `json:"auth_token"`
 	}
 )
 
 func NewKeeper() *Keeper {
-	return &Keeper{JWTAuth: initializers.GetJWTAuth()}
+	return &Keeper{
+		AuthSessions: records.NewAuthSession(),
+		JWTAuth:      initializers.GetJWTAuth(),
+	}
 }
 
 func (k *Keeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequest,
 ) (*proto.Empty, error) {
 	email := strings.ToLower(strings.TrimSpace(r.Email))
-
 	// TODO: find user by email, create authsession and send email.
 	if email != "user@example.com" {
 		return nil, ErrUserDoesNotExist
@@ -56,29 +59,28 @@ func (k *Keeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionReques
 
 	authSession := &models.AuthSession{
 		ID:        "abc123",
-		Email:     email,
+		UserID:    "abc123",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	log.Print("AuthSession: ", authSession)
+	log.Print("Mail AuthSession: ", authSession)
 	return &proto.Empty{}, nil
 }
 
 func (k *Keeper) Login(_ context.Context, r *LoginRequest) (*LoginResponse, error) {
-	login := strings.TrimSpace(r.Login)
-	if login != "login" {
-		return nil, errors.New("user is not authenticated")
+	authSession, err := k.AuthSessions.FindOneByID(nil, r.AuthSessionID)
+	if err != nil {
+		return nil, err
 	}
 
-	userID := "abc123"
 	_, tokenString, err := k.JWTAuth.Encode(
 		jwtauth.Claims{
-			"sub": userID,
+			"sub": authSession.UserID,
 			"exp": time.Now().Add(exp).Unix(),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &LoginResponse{Token: tokenString}, nil
+	return &LoginResponse{AuthToken: tokenString}, nil
 }

@@ -10,8 +10,7 @@ import (
 )
 
 func DecodeRequest(w http.ResponseWriter, r *http.Request, v interface{}) {
-	err := render.DecodeJSON(r.Body, v)
-	if err != nil {
+	if err := render.DecodeJSON(r.Body, v); err != nil {
 		log.Print("error [decode request]: ", err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		xhttp.AbortHandler()
