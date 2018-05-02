@@ -2,12 +2,13 @@ package services
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/go-chi/jwtauth"
 
 	"github.com/sknv/upsale/app/core/models"
-	"github.com/sknv/upsale/app/core/repositories"
+	"github.com/sknv/upsale/app/core/records"
 )
 
 type contextKey string
@@ -16,42 +17,33 @@ const (
 	contextKeyCurrentUser = contextKey("_auth.CurrentUser")
 )
 
-type (
-	Authenticator struct {
-		UserRepo *repositories.User
-	}
-
-	GetCurrentUserRequest struct {
-		Request *http.Request
-	}
-
-	CurrentUserResponse struct {
-		User *models.User
-	}
-)
-
-func NewAuthenticator() *Authenticator {
-	return &Authenticator{UserRepo: repositories.NewUser()}
+type Authenticator struct {
+	Users *records.User
 }
 
-func (a *Authenticator) GetCurrentUser(_ context.Context, r *GetCurrentUserRequest,
-) (*CurrentUserResponse, error) {
-	currentUser := r.Request.Context().Value(contextKeyCurrentUser)
+func NewAuthenticator() *Authenticator {
+	return &Authenticator{Users: records.NewUser()}
+}
+
+func (a *Authenticator) GetCurrentUser(_ context.Context, r *http.Request) (*models.User, error) {
+	currentUser := r.Context().Value(contextKeyCurrentUser)
 	if currentUser != nil {
 		currentUser := currentUser.(*models.User)
-		return &CurrentUserResponse{User: currentUser}, nil
+		return currentUser, nil
 	}
 
-	_, claims, _ := jwtauth.FromContext(r.Request.Context())
-	userID := claims["sub"].(string)
-	user, err := a.UserRepo.FindOneByID(userID)
+	_, claims, _ := jwtauth.FromContext(r.Context())
+	userID, ok := claims["sub"].(string)
+	if !ok {
+		return nil, errors.New("sub claim is empty or not a string")
+	}
+
+	user, err := a.Users.FindOneByID(userID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Cache current user.
-	*r.Request = *r.Request.WithContext(
-		context.WithValue(r.Request.Context(), contextKeyCurrentUser, user),
-	)
-	return &CurrentUserResponse{User: user}, nil
+	*r = *r.WithContext(context.WithValue(r.Context(), contextKeyCurrentUser, user))
+	return user, nil
 }
