@@ -31,8 +31,8 @@ func route(router chi.Router) {
 }
 
 func routeAuth(router chi.Router) {
-	auth := controllers.NewAuth()
-	router.Post("/login", auth.Login)
+	session := controllers.NewSession()
+	router.Post("/login", session.Login)
 }
 
 func routeGreeter(router chi.Router) {

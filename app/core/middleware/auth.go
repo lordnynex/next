@@ -5,14 +5,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/sknv/upsale/app/services/auth"
+	"github.com/sknv/upsale/app/services"
 )
 
 func CurrentUserVerifier(next http.Handler) http.Handler {
-	authClient := auth.NewAuthClient()
+	authenticator := services.NewAuthenticator()
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		_, err := authClient.GetCurrentUser(
-			context.Background(), &auth.GetCurrentUserRequest{Request: r},
+		_, err := authenticator.GetCurrentUser(
+			context.Background(), &services.GetCurrentUserRequest{Request: r},
 		)
 		if err != nil {
 			log.Print("error [verify current user]: ", err)

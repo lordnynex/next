@@ -10,7 +10,9 @@ const (
 	alg = "HS256"
 )
 
-var jwtAuth *jwtauth.JWTAuth
+var (
+	jwtAuth *jwtauth.JWTAuth
+)
 
 func init() {
 	jwtAuth = jwtauth.New(alg, []byte(cfg.GetSecretKey()), nil)

@@ -6,20 +6,20 @@ import (
 
 	"github.com/go-chi/render"
 
-	"github.com/sknv/upsale/app/services/auth"
+	"github.com/sknv/upsale/app/services"
 )
 
 type Greeter struct {
-	AuthClient auth.Auth
+	Authenticator *services.Authenticator
 }
 
 func NewGreeter() *Greeter {
-	return &Greeter{AuthClient: auth.NewAuthClient()}
+	return &Greeter{Authenticator: services.NewAuthenticator()}
 }
 
 func (g *Greeter) Hello(w http.ResponseWriter, r *http.Request) {
-	currentUserResponse, _ := g.AuthClient.GetCurrentUser(
-		context.Background(), &auth.GetCurrentUserRequest{Request: r},
+	currentUserResponse, _ := g.Authenticator.GetCurrentUser(
+		context.Background(), &services.GetCurrentUserRequest{Request: r},
 	)
 	render.JSON(w, r, render.M{"hello": currentUserResponse.User.Username})
 }
