@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chi/render"
 
-	xhttp "github.com/sknv/upsale/app/lib/net/http"
+	"github.com/sknv/upsale/app/core/utils"
 	"github.com/sknv/upsale/app/services"
 )
 
@@ -51,23 +51,13 @@ func (a *AuthSession) Login(w http.ResponseWriter, r *http.Request) {
 func (*AuthSession) decodeCreateRequest(w http.ResponseWriter, r *http.Request,
 ) *services.CreateAuthSessionRequest {
 	createRequest := &services.CreateAuthSessionRequest{}
-	err := render.DecodeJSON(r.Body, createRequest)
-	if err != nil {
-		log.Print("error [decodeCreateRequest]: ", err)
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		xhttp.AbortHandler()
-	}
+	utils.DecodeRequest(w, r, createRequest)
 	return createRequest
 }
 
 func (*AuthSession) decodeLoginRequest(w http.ResponseWriter, r *http.Request,
 ) *services.LoginRequest {
 	loginRequest := &services.LoginRequest{}
-	err := render.DecodeJSON(r.Body, loginRequest)
-	if err != nil {
-		log.Print("error [decodeLoginRequest]: ", err)
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		xhttp.AbortHandler()
-	}
+	utils.DecodeRequest(w, r, loginRequest)
 	return loginRequest
 }
