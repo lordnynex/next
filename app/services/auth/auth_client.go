@@ -27,7 +27,7 @@ type AuthClient struct {
 
 func NewAuthClient() Auth {
 	return &AuthClient{
-		JWTAuth:  initializers.NewJWTAuth(),
+		JWTAuth:  initializers.GetJWTAuth(),
 		UserRepo: repositories.NewUser(),
 	}
 }

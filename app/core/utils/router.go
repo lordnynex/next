@@ -15,7 +15,7 @@ func UseDefaultMiddleware(router chi.Router) {
 }
 
 func RequireJWT(router chi.Router) {
-	router.Use(jwtauth.Verifier(initializers.NewJWTAuth()), jwtauth.Authenticator)
+	router.Use(jwtauth.Verifier(initializers.GetJWTAuth()), jwtauth.Authenticator)
 }
 
 func RequireLogin(router chi.Router) {
