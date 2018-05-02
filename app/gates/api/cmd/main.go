@@ -34,7 +34,7 @@ func routeAuthSession(router chi.Router) {
 	authSession := controllers.NewAuthSession()
 	router.Route("/authsession", func(r chi.Router) {
 		r.Post("/create", authSession.Create)
-		r.Post("/login", authSession.Login)
+		r.Post("/login/{authsessionid}", authSession.Login)
 	})
 }
 
