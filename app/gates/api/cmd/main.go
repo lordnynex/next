@@ -32,9 +32,9 @@ func route(router chi.Router) {
 
 func routeAuthSession(router chi.Router) {
 	authSession := controllers.NewAuthSession()
-	router.Route("/authsession", func(r chi.Router) {
-		r.Post("/create", authSession.Create)
-		r.Post("/login/{authsessionid}", authSession.Login)
+	router.Route("/login", func(r chi.Router) {
+		r.Post("/", authSession.Create)
+		r.Post("/{authsessionid}", authSession.Login)
 	})
 }
 

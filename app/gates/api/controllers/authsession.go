@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-
 	"github.com/go-chi/render"
 
 	"github.com/sknv/upsale/app/core/utils"
