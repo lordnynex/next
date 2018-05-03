@@ -2,6 +2,7 @@ package records
 
 import (
 	"errors"
+	"time"
 
 	"github.com/globalsign/mgo"
 
@@ -18,5 +19,13 @@ func (*AuthSession) FindOneByID(_ *mgo.Session, id string) (*models.AuthSession,
 	if id != "abc123" {
 		return nil, errors.New("auth session does not exist")
 	}
-	return &models.AuthSession{ID: "abc123", UserID: "abc123"}, nil
+	return &models.AuthSession{
+		ID:        "abc123",
+		UserID:    "abc123",
+		CreatedAt: time.Now().Add(-10 * time.Minute),
+	}, nil
+}
+
+func (*AuthSession) UpdateDoc(_ *mgo.Session, authSession *models.AuthSession) error {
+	return nil
 }

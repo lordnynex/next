@@ -53,7 +53,6 @@ func (*AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequ
 		ID:        "abc123",
 		UserID:    "abc123",
 		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 	log.Print("Mail AuthSession: ", authSession)
 	return &proto.Empty{}, nil
@@ -62,6 +61,15 @@ func (*AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequ
 func (a *AuthKeeper) Login(_ context.Context, authSessionID string) (*LoginResponse, error) {
 	authSession, err := a.AuthSessions.FindOneByID(nil, authSessionID)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := authSession.Validate(); err != nil {
+		return nil, err
+	}
+
+	authSession.LogIn()
+	if err := a.AuthSessions.UpdateDoc(nil, authSession); err != nil {
 		return nil, err
 	}
 
