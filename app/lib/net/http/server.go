@@ -17,7 +17,7 @@ func ListenAndServe(addr string, handler http.Handler, shutdownTimeout time.Dura
 }
 
 func startServer(handler http.Handler, addr string) *http.Server {
-	log.Printf("Server started on %s", addr)
+	log.Print("Server started on ", addr)
 
 	server := &http.Server{
 		Addr:    addr,
@@ -27,7 +27,7 @@ func startServer(handler http.Handler, addr string) *http.Server {
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
 			// Cannot panic, because this probably is an intentional close.
-			log.Println(err)
+			log.Print(err)
 		}
 	}()
 
@@ -41,7 +41,7 @@ func shutdownServerGracefully(server *http.Server, shutdownTimeout time.Duration
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 
-	log.Println("Shutting down the server...")
+	log.Print("Shutting down the server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
@@ -50,5 +50,5 @@ func shutdownServerGracefully(server *http.Server, shutdownTimeout time.Duration
 		panic(err)
 	}
 
-	log.Println("Server gracefully stopped.")
+	log.Print("Server gracefully stopped.")
 }
