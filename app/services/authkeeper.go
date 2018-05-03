@@ -3,7 +3,9 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
+	"net/smtp"
 	"strings"
 	"time"
 
@@ -93,4 +95,16 @@ func (*AuthKeeper) sendLoginLink(authSession *models.AuthSession, email string) 
 		return
 	}
 	// TODO: Actually send the link by email.
+	auth := smtp.PlainAuth("", "sail.notification@yandex.ru", "q1w2e3asd", "smtp.yandex.ru")
+	from := "sail.notification@yandex.ru"
+	to := "tanmay.ihan@0nly.org"
+	body := fmt.Sprintf(
+		"Paste this link into your web browser: http://localhost:4000/login/%s", authSession.ID,
+	)
+	msg := fmt.Sprintf("From: %s\nTo: %s\nSubject: Magic link\n\n%s", from, to, body)
+	if err := smtp.SendMail(
+		"smtp.yandex.ru:587", auth, from, []string{to}, []byte(msg),
+	); err != nil {
+		log.Print("error [send login link]: ", err)
+	}
 }

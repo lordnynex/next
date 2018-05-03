@@ -22,7 +22,9 @@ func NewAuthSession() *AuthSession {
 
 func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 	createRequest := a.decodeCreateRequest(w, r)
-	if _, err := a.AuthKeeper.CreateAuthSession(context.Background(), createRequest); err != nil {
+	if _, err := a.AuthKeeper.CreateAuthSession(
+		context.Background(), createRequest,
+	); err != nil {
 		log.Print("error [create auth session]: ", err)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
