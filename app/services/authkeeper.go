@@ -41,7 +41,7 @@ func NewAuthKeeper() *AuthKeeper {
 	}
 }
 
-func (*AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequest,
+func (a *AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequest,
 ) (*proto.Empty, error) {
 	email := strings.ToLower(strings.TrimSpace(r.Email))
 	// TODO: find user by email, create authsession and send email.
@@ -54,7 +54,7 @@ func (*AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequ
 		UserID:    "abc123",
 		CreatedAt: time.Now(),
 	}
-	log.Print("Mail AuthSession: ", authSession)
+	go a.sendLoginLink(authSession, email)
 	return &proto.Empty{}, nil
 }
 
@@ -83,4 +83,9 @@ func (a *AuthKeeper) Login(_ context.Context, authSessionID string) (*LoginRespo
 		return nil, err
 	}
 	return &LoginResponse{AuthToken: tokenString}, nil
+}
+
+func (*AuthKeeper) sendLoginLink(authSession *models.AuthSession, email string) {
+	time.Sleep(time.Second)
+	log.Print("info [send login link]: ", authSession, " to ", email)
 }
