@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/jwtauth"
 
+	"github.com/sknv/upsale/app/core/cfg"
 	"github.com/sknv/upsale/app/core/initializers"
 	"github.com/sknv/upsale/app/core/models"
 	"github.com/sknv/upsale/app/core/records"
@@ -86,6 +87,10 @@ func (a *AuthKeeper) Login(_ context.Context, authSessionID string) (*LoginRespo
 }
 
 func (*AuthKeeper) sendLoginLink(authSession *models.AuthSession, email string) {
-	time.Sleep(time.Second)
-	log.Print("info [send login link]: ", authSession, " to ", email)
+	// Log the magic link for the development mode.
+	if !cfg.IsProduction() {
+		log.Printf("info [send login link]: auth session id [%s] to [%s]", authSession.ID, email)
+		return
+	}
+	// TODO: Actually send the link by email.
 }

@@ -2,14 +2,10 @@ package cfg
 
 import "os"
 
-const (
-	envSecretKey = "UPSALE_SECRET_KEY"
-)
-
 func GetSecretKey() string {
-	secretKey, ok := os.LookupEnv(envSecretKey)
+	secretKey, ok := os.LookupEnv("UPSALE_SECRET_KEY")
 	if !ok {
-		panic(envSecretKey + " is not defined")
+		return "XgK8SELWvdY7HEG9JAbjKgJj39RJJMyq" // Default secret key.
 	}
 	return secretKey
 }
