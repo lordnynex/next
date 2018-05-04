@@ -1,8 +1,6 @@
 package records
 
 import (
-	"errors"
-
 	"github.com/globalsign/mgo"
 
 	"github.com/sknv/upsale/app/core/models"
@@ -16,7 +14,7 @@ func NewUser() *User {
 
 func (*User) FindOneByID(_ *mgo.Session, id string) (*models.User, error) {
 	if id != "abc123" {
-		return nil, errors.New("user does not exist")
+		return nil, mgo.ErrNotFound
 	}
 	return &models.User{ID: "abc123", Email: "user@example.com"}, nil
 }
@@ -28,7 +26,8 @@ func (*User) FindOneByEmail(_ *mgo.Session, email string) (*models.User, error) 
 	return &models.User{ID: "abc123", Email: "user@example.com"}, nil
 }
 
-func (*User) Insert(_ *mgo.Session, user *models.User) error {
+func (u *User) Insert(_ *mgo.Session, user *models.User) error {
+	user.ID = "xyz456"
 	return nil
 }
 
@@ -41,7 +40,7 @@ func (u *User) FindOneOrInsertByEmail(ses *mgo.Session, email string) (*models.U
 	}
 
 	// Insert a user if one does not exist yet.
-	user = &models.User{ID: "xyz456", Email: email}
+	user = &models.User{Email: email}
 	err = u.Insert(ses, user)
 	if err != nil {
 		return nil, err
