@@ -16,13 +16,11 @@ const (
 )
 
 func main() {
-	addr := cfg.GetAddr()
-
 	router := chi.NewRouter()
 	utils.UseDefaultMiddleware(router)
 
 	route(router)
-	xhttp.ListenAndServe(addr, router, shutdownTimeout)
+	xhttp.ListenAndServe(cfg.GetAddr(), router, shutdownTimeout)
 }
 
 func route(router chi.Router) {

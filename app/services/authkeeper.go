@@ -48,12 +48,14 @@ func NewAuthKeeper() *AuthKeeper {
 	}
 }
 
+// CreateAuthSession creates a user account if one does not exist yet and stores an auth session.
 func (a *AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequest,
 ) (*proto.Empty, error) {
 	if err := r.Validate(); err != nil {
 		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusUnprocessableEntity}
 	}
 
+	// Create an account if one does not exist yet.
 	user, err := a.Users.FindOneOrInsertByEmail(nil, r.Email)
 	if err != nil {
 		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
@@ -64,10 +66,11 @@ func (a *AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRe
 		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
 	}
 
-	go a.LoginMailer.Deliver(authSession.ID, user.Email)
+	go a.LoginMailer.Deliver(authSession.ID, user.Email) // Deliver later.
 	return &proto.Empty{}, nil
 }
 
+// Login validates an auth session and in case of a successful validation returns an auth token.
 func (a *AuthKeeper) Login(_ context.Context, authSessionID string) (*LoginResponse, error) {
 	authSession, err := a.AuthSessions.FindOneByID(nil, authSessionID)
 	if err != nil {
@@ -84,10 +87,7 @@ func (a *AuthKeeper) Login(_ context.Context, authSessionID string) (*LoginRespo
 	}
 
 	_, tokenString, err := a.JWTAuth.Encode(
-		jwtauth.Claims{
-			"sub": authSession.UserID,
-			"exp": time.Now().Add(exp).Unix(),
-		},
+		jwtauth.Claims{"sub": authSession.UserID, "exp": time.Now().Add(exp).Unix()},
 	)
 	if err != nil {
 		return nil, err

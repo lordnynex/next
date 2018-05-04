@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	authSessionExpirationPeriod = 30 * time.Minute
+	authSessionExpirationPeriod = 15 * time.Minute
 )
 
 type AuthSession struct {
