@@ -20,3 +20,31 @@ func (*User) FindOneByID(_ *mgo.Session, id string) (*models.User, error) {
 	}
 	return &models.User{ID: "abc123", Email: "user@example.com"}, nil
 }
+
+func (*User) FindOneByEmail(_ *mgo.Session, email string) (*models.User, error) {
+	if email != "user@example.com" {
+		return nil, mgo.ErrNotFound
+	}
+	return &models.User{ID: "abc123", Email: "user@example.com"}, nil
+}
+
+func (*User) Insert(_ *mgo.Session, user *models.User) error {
+	return nil
+}
+
+func (u *User) FindOneOrInsertByEmail(ses *mgo.Session, email string) (*models.User, error) {
+	user, err := u.FindOneByEmail(ses, email)
+	if err == nil {
+		return user, nil // Return a user if one exists.
+	} else if err != mgo.ErrNotFound {
+		return nil, err // Return in case of unknown error.
+	}
+
+	// Insert a user if one does not exist yet.
+	user = &models.User{ID: "xyz456", Email: email}
+	err = u.Insert(ses, user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

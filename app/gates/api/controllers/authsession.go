@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/render"
 
 	"github.com/sknv/upsale/app/core/utils"
+	xhttp "github.com/sknv/upsale/app/lib/net/http"
 	"github.com/sknv/upsale/app/services"
 )
 
@@ -21,13 +22,17 @@ func NewAuthSession() *AuthSession {
 }
 
 func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
-	createRequest := a.decodeCreateRequest(w, r)
-	if _, err := a.AuthKeeper.CreateAuthSession(
-		context.Background(), createRequest,
-	); err != nil {
+	req := a.decodeCreateRequest(w, r)
+	_, err := a.AuthKeeper.CreateAuthSession(context.Background(), req)
+	if err != nil {
 		log.Print("error [create auth session]: ", err)
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-		return
+		err := err.(*xhttp.ErrHttpStatus)
+		if err.Status != http.StatusInternalServerError {
+			render.Status(r, err.Status)
+			render.JSON(w, r, err.Err)
+			return
+		}
+		panic(err)
 	}
 
 	w.WriteHeader(http.StatusCreated)
@@ -35,7 +40,7 @@ func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 
 func (a *AuthSession) Login(w http.ResponseWriter, r *http.Request) {
 	authSessionID := chi.URLParam(r, "authsessionid")
-	loginResponse, err := a.AuthKeeper.Login(context.Background(), authSessionID)
+	resp, err := a.AuthKeeper.Login(context.Background(), authSessionID)
 	if err != nil {
 		log.Print("error [login]: ", err)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
@@ -43,12 +48,12 @@ func (a *AuthSession) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusCreated)
-	render.JSON(w, r, loginResponse)
+	render.JSON(w, r, resp)
 }
 
 func (*AuthSession) decodeCreateRequest(w http.ResponseWriter, r *http.Request,
 ) *services.CreateAuthSessionRequest {
-	createRequest := &services.CreateAuthSessionRequest{}
-	utils.DecodeRequest(w, r, createRequest)
-	return createRequest
+	req := &services.CreateAuthSessionRequest{}
+	utils.DecodeRequest(w, r, req)
+	return req
 }

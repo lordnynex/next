@@ -15,7 +15,7 @@ func NewLogin() *Login {
 }
 
 func (l *Login) Deliver(authSessionID, to string) {
-	loginLink := "http://localhost:4000/login/" + authSessionID
+	loginLink := "http://localhost:3000/login/" + authSessionID
 	html := fmt.Sprintf(`<a href="%s">Log in</a>`, loginLink)
 	text := "Paste this link into your web browser: " + loginLink
 	email := &email.Email{

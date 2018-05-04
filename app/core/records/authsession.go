@@ -26,6 +26,10 @@ func (*AuthSession) FindOneByID(_ *mgo.Session, id string) (*models.AuthSession,
 	}, nil
 }
 
+func (*AuthSession) Insert(_ *mgo.Session, authSession *models.AuthSession) error {
+	return nil
+}
+
 func (*AuthSession) UpdateDoc(_ *mgo.Session, authSession *models.AuthSession) error {
 	return nil
 }

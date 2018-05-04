@@ -2,16 +2,19 @@ package services
 
 import (
 	"context"
-	"errors"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/go-chi/jwtauth"
+	"github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation/is"
 
 	"github.com/sknv/upsale/app/core/initializers"
 	"github.com/sknv/upsale/app/core/mailers"
 	"github.com/sknv/upsale/app/core/models"
 	"github.com/sknv/upsale/app/core/records"
+	xhttp "github.com/sknv/upsale/app/lib/net/http"
 	"github.com/sknv/upsale/app/lib/net/rpc/proto"
 )
 
@@ -21,13 +24,14 @@ const (
 
 type (
 	AuthKeeper struct {
-		AuthSessions *records.AuthSession
 		JWTAuth      *jwtauth.JWTAuth
 		LoginMailer  *mailers.Login
+		AuthSessions *records.AuthSession
+		Users        *records.User
 	}
 
 	CreateAuthSessionRequest struct {
-		Email string
+		Email string `json:"email"`
 	}
 
 	LoginResponse struct {
@@ -37,26 +41,30 @@ type (
 
 func NewAuthKeeper() *AuthKeeper {
 	return &AuthKeeper{
-		AuthSessions: records.NewAuthSession(),
 		JWTAuth:      initializers.GetJWTAuth(),
 		LoginMailer:  mailers.NewLogin(),
+		AuthSessions: records.NewAuthSession(),
+		Users:        records.NewUser(),
 	}
 }
 
 func (a *AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequest,
 ) (*proto.Empty, error) {
-	email := strings.ToLower(strings.TrimSpace(r.Email))
-	// TODO: find user by email, create authsession and send email.
-	if email != "user@example.com" {
-		return nil, errors.New("user does not exist")
+	if err := r.Validate(); err != nil {
+		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusUnprocessableEntity}
 	}
 
-	authSession := &models.AuthSession{
-		ID:        "abc123",
-		UserID:    "abc123",
-		CreatedAt: time.Now(),
+	user, err := a.Users.FindOneOrInsertByEmail(nil, r.Email)
+	if err != nil {
+		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
 	}
-	go a.LoginMailer.Deliver(authSession.ID, email)
+
+	authSession := &models.AuthSession{UserID: user.ID}
+	if err := a.AuthSessions.Insert(nil, authSession); err != nil {
+		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
+	}
+
+	go a.LoginMailer.Deliver(authSession.ID, user.Email)
 	return &proto.Empty{}, nil
 }
 
@@ -85,4 +93,16 @@ func (a *AuthKeeper) Login(_ context.Context, authSessionID string) (*LoginRespo
 		return nil, err
 	}
 	return &LoginResponse{AuthToken: tokenString}, nil
+}
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+func (r *CreateAuthSessionRequest) Validate() error {
+	r.Email = strings.ToLower(strings.TrimSpace(r.Email))
+	return validation.ValidateStruct(
+		r,
+		validation.Field(&r.Email, validation.Required, is.Email),
+	)
 }
