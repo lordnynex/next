@@ -10,14 +10,13 @@ import (
 )
 
 type Mailer struct {
+	From string
 	Addr string
 	Auth smtp.Auth
-	From string
 }
 
 func NewMailer() *Mailer {
 	return &Mailer{
-		// TODO: Specify for production.
 		From: "Upsale Mailer <sail.notification@yandex.ru>",
 
 		Addr: cfg.GetMailAddr(),
@@ -27,20 +26,16 @@ func NewMailer() *Mailer {
 	}
 }
 
-func (m *Mailer) Send(subject, html, text string, to []string) error {
+func (m *Mailer) Deliver(email *email.Email) {
 	// Log an email for the development mode.
 	if !cfg.IsProduction() {
-		log.Printf("info [send email]: %s to %s", text, to)
-		return nil
+		log.Printf("info [deliver email]: %s to %s", email.Text, email.To)
+		return
 	}
 
 	// Actually deliver an email.
-	email := &email.Email{
-		From:    m.From,
-		To:      to,
-		Subject: subject,
-		HTML:    []byte(html),
-		Text:    []byte(text),
+	email.From = m.From
+	if err := email.Send(m.Addr, m.Auth); err != nil {
+		log.Print("error [deliver email]: ", err)
 	}
-	return email.Send(m.Addr, m.Auth)
 }
