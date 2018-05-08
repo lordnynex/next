@@ -3,6 +3,7 @@ package mailers
 import (
 	"fmt"
 
+	"github.com/go-chi/render"
 	"github.com/jordan-wright/email"
 
 	"github.com/sknv/upsale/app/core/cfg"
@@ -21,24 +22,8 @@ func (l *Login) Deliver(authSessionID, to string) {
 	email := &email.Email{
 		To:      []string{to},
 		Subject: "Login Link",
-		HTML:    []byte(l.getHTML(loginLink)),
-		Text:    []byte(l.getText(loginLink)),
+		HTML:    l.Mailer.ExecuteTemplate("login", render.M{"link": loginLink}),
+		Text:    []byte("Paste this link into web browser to login into your accout: " + loginLink),
 	}
-
 	l.Mailer.Deliver(email)
-}
-
-func (l *Login) getHTML(loginLink string) string {
-	html := fmt.Sprintf(`<p>
-Click the link below to login into your account.
-This link will expire in 15 minutes and can only be used once.
-</p>
-<a href="%s">Log in</a>`,
-		loginLink,
-	)
-	return html
-}
-
-func (l *Login) getText(loginLink string) string {
-	return "Paste this link into your web browser to login: " + loginLink
 }

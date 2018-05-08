@@ -23,8 +23,7 @@ func NewAuthSession() *AuthSession {
 
 func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 	req := a.decodeCreateRequest(w, r)
-	_, err := a.AuthKeeper.CreateAuthSession(context.Background(), req)
-	if err != nil {
+	if _, err := a.AuthKeeper.CreateAuthSession(context.Background(), req); err != nil {
 		log.Print("error [create auth session]: ", err)
 		err := err.(*xhttp.ErrHttpStatus)
 		if err.Status != http.StatusInternalServerError {
