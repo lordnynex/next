@@ -6,6 +6,8 @@ import (
 )
 
 const (
+	MailBaseUrl = "http://localhost:3000"
+
 	envMailHost     = "UPSALE_MAIL_HOST"
 	envMailPort     = "UPSALE_MAIL_PORT"
 	envMailUsername = "UPSALE_MAIL_USERNAME"
