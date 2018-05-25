@@ -23,7 +23,9 @@ func (l *Login) Deliver(authSessionID, to string) {
 		To:      []string{to},
 		Subject: "Login Link",
 		HTML:    l.Mailer.ExecuteTemplate("login", render.M{"link": loginLink}),
-		Text:    []byte("Paste this link into web browser to login into your accout: " + loginLink),
+		Text: []byte(
+			"Paste this link into web browser to login into your accout: " + loginLink,
+		),
 	}
 	l.Mailer.Deliver(email)
 }

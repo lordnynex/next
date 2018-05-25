@@ -71,7 +71,8 @@ func (a *AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRe
 }
 
 // Login validates an auth session and in case of a successful validation returns an auth token.
-func (a *AuthKeeper) Login(_ context.Context, authSessionID string) (*LoginResponse, error) {
+func (a *AuthKeeper) Login(_ context.Context, authSessionID string,
+) (*LoginResponse, error) {
 	authSession, err := a.AuthSessions.FindOneByID(nil, authSessionID)
 	if err != nil {
 		return nil, err

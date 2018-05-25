@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"time"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
@@ -11,14 +13,24 @@ import (
 )
 
 func UseDefaultMiddleware(router chi.Router) {
-	router.Use(middleware.Logger, middleware.Recoverer, lmiddleware.Recoverer)
+	router.Use(
+		middleware.RealIP, middleware.Logger, middleware.Recoverer, lmiddleware.Recoverer,
+	)
 }
 
-func RequireJWT(router chi.Router) {
-	router.Use(jwtauth.Verifier(initializers.GetJWTAuth()), jwtauth.Authenticator)
+func UseThrottleAndTimeout(
+	router chi.Router, concurrentRequestsLimit int, requestTimeout time.Duration,
+) {
+	router.Use(
+		middleware.Throttle(concurrentRequestsLimit), middleware.Timeout(requestTimeout),
+	)
 }
 
 func RequireLogin(router chi.Router) {
-	RequireJWT(router)
-	router.Use(cmiddleware.CurrentUserVerifier)
+	router.Use(
+		// Require presence of valid JWT.
+		jwtauth.Verifier(initializers.GetJWTAuth()), jwtauth.Authenticator,
+		// Require presence of current user.
+		cmiddleware.CurrentUserVerifier,
+	)
 }

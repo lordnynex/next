@@ -12,12 +12,15 @@ import (
 )
 
 const (
-	shutdownTimeout = 10 * time.Second
+	concurrentRequestsLimit = 1000
+	requestTimeout          = 60 * time.Second
+	shutdownTimeout         = 30 * time.Second
 )
 
 func main() {
 	router := chi.NewRouter()
 	utils.UseDefaultMiddleware(router)
+	utils.UseThrottleAndTimeout(router, concurrentRequestsLimit, requestTimeout)
 
 	route(router)
 	xhttp.ListenAndServe(cfg.GetAddr(), router, shutdownTimeout)

@@ -31,7 +31,8 @@ func (u *User) Insert(_ *mgo.Session, user *models.User) error {
 	return nil
 }
 
-func (u *User) FindOneOrInsertByEmail(ses *mgo.Session, email string) (*models.User, error) {
+func (u *User) FindOneOrInsertByEmail(ses *mgo.Session, email string,
+) (*models.User, error) {
 	user, err := u.FindOneByEmail(ses, email)
 	if err == nil {
 		return user, nil // Return a user if one exists.

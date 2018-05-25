@@ -41,7 +41,7 @@ func (m *Mailer) ExecuteTemplate(name string, data interface{}) []byte {
 func (m *Mailer) Deliver(email *email.Email) {
 	// Log an email for the development mode.
 	if !cfg.IsProduction() {
-		log.Printf("[INFO] deliver email %s to %s", email.Text, email.To)
+		log.Printf("[INFO] deliver email: %s to %s", email.Text, email.To)
 		return
 	}
 
