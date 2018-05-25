@@ -13,6 +13,10 @@ import (
 	"github.com/sknv/upsale/app/services"
 )
 
+const (
+	authRequestLimit = 5 // Per second.
+)
+
 type AuthSession struct {
 	AuthKeeper *services.AuthKeeper
 }
@@ -23,6 +27,8 @@ func NewAuthSession() *AuthSession {
 
 func (a *AuthSession) Route(router chi.Router) {
 	router.Route("/login", func(r chi.Router) {
+		utils.LimitHandler(router, authRequestLimit)
+
 		r.Post("/", a.Create)
 		r.Post("/{authsessionid}", a.Login)
 	})
