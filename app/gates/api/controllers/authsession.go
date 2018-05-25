@@ -21,6 +21,13 @@ func NewAuthSession() *AuthSession {
 	return &AuthSession{AuthKeeper: services.NewAuthKeeper()}
 }
 
+func (a *AuthSession) Route(router chi.Router) {
+	router.Route("/login", func(r chi.Router) {
+		r.Post("/", a.Create)
+		r.Post("/{authsessionid}", a.Login)
+	})
+}
+
 func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 	req := a.decodeCreateRequest(w, r)
 	if _, err := a.AuthKeeper.CreateAuthSession(context.Background(), req); err != nil {
