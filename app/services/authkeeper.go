@@ -67,7 +67,7 @@ func (a *AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRe
 	}
 
 	go a.LoginMailer.Deliver(authSession.ID, user.Email) // Deliver later.
-	return &proto.Empty{}, nil
+	return nil, nil
 }
 
 // Login validates an auth session and in case of a successful validation returns an auth token.

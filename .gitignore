@@ -12,5 +12,5 @@
 *.out
 
 # Ignore logfiles.
-logs/*
-!logs/.keep
+log/*
+!log/.keep
