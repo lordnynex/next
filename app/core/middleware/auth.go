@@ -13,7 +13,7 @@ func CurrentUserVerifier(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		_, err := authenticator.GetCurrentUser(context.Background(), r)
 		if err != nil {
-			log.Print("error [verify current user]: ", err)
+			log.Print("[ERROR] verify current user: ", err)
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}

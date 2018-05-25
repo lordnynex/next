@@ -24,7 +24,7 @@ func NewAuthSession() *AuthSession {
 func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 	req := a.decodeCreateRequest(w, r)
 	if _, err := a.AuthKeeper.CreateAuthSession(context.Background(), req); err != nil {
-		log.Print("error [create auth session]: ", err)
+		log.Print("[ERROR] create auth session: ", err)
 		err := err.(*xhttp.ErrHttpStatus)
 		if err.Status != http.StatusInternalServerError {
 			render.Status(r, err.Status)
@@ -41,7 +41,7 @@ func (a *AuthSession) Login(w http.ResponseWriter, r *http.Request) {
 	authSessionID := chi.URLParam(r, "authsessionid")
 	resp, err := a.AuthKeeper.Login(context.Background(), authSessionID)
 	if err != nil {
-		log.Print("error [login]: ", err)
+		log.Print("[ERROR] login: ", err)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
