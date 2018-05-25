@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/render"
 
 	"github.com/sknv/upsale/app/core/utils"
+	xchi "github.com/sknv/upsale/app/lib/chi"
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
 	"github.com/sknv/upsale/app/services"
 )
@@ -27,7 +28,7 @@ func NewAuthSession() *AuthSession {
 
 func (a *AuthSession) Route(router chi.Router) {
 	router.Route("/login", func(r chi.Router) {
-		utils.LimitHandler(router, authRequestLimit)
+		xchi.LimitHandler(router, authRequestLimit)
 
 		r.Post("/", a.Create)
 		r.Post("/{authsessionid}", a.Login)

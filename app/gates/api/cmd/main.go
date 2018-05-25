@@ -5,9 +5,9 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/sknv/upsale/app/core/utils"
 	"github.com/sknv/upsale/app/gates/api/cfg"
 	"github.com/sknv/upsale/app/gates/api/controllers"
+	xchi "github.com/sknv/upsale/app/lib/chi"
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
 )
 
@@ -19,8 +19,8 @@ const (
 
 func main() {
 	router := chi.NewRouter()
-	utils.UseDefaultMiddleware(router)
-	utils.ThrottleAndTimeout(router, concurrentRequestLimit, requestTimeout)
+	xchi.UseDefaultMiddleware(router)
+	xchi.ThrottleAndTimeout(router, concurrentRequestLimit, requestTimeout)
 
 	route(router)
 	xhttp.ListenAndServe(cfg.GetAddr(), router, shutdownTimeout)
