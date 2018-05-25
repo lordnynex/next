@@ -1,43 +1,32 @@
 package main
 
 import (
-	"net/http"
 	"time"
 
-	"github.com/go-chi/render"
-
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 
 	"github.com/sknv/upsale/app/gates/api/cfg"
-	xmiddleware "github.com/sknv/upsale/app/lib/middleware"
+	"github.com/sknv/upsale/app/gates/api/controllers"
+	xchi "github.com/sknv/upsale/app/lib/chi"
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
 )
 
 const (
-	shutdownTimeout = 10 * time.Second
+	concurrentRequestLimit = 1000
+	requestTimeout         = 60 * time.Second
+	shutdownTimeout        = 30 * time.Second
 )
 
 func main() {
-	addr := cfg.GetAddr()
-
 	router := chi.NewRouter()
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
-	router.Use(xmiddleware.Recoverer)
+	xchi.UseDefaultMiddleware(router)
+	xchi.ThrottleAndTimeout(router, concurrentRequestLimit, requestTimeout)
 
-	router.Get("/hello", hello)
-	router.Get("/abort", abort)
-
-	xhttp.ListenAndServe(addr, router, shutdownTimeout)
+	route(router)
+	xhttp.ListenAndServe(cfg.GetAddr(), router, shutdownTimeout)
 }
 
-func hello(w http.ResponseWriter, r *http.Request) {
-	render.JSON(w, r, render.M{"name": "User"})
-}
-
-func abort(w http.ResponseWriter, r *http.Request) {
-	render.Status(r, http.StatusUnauthorized)
-	render.JSON(w, r, render.M{"error": "Unauthorized"})
-	xhttp.AbortHandler()
+func route(router chi.Router) {
+	controllers.NewAuthSession().Route(router)
+	controllers.NewGreeter().Route(router)
 }

@@ -2,14 +2,10 @@ package cfg
 
 import "os"
 
-const (
-	envAddr = "API_GATE_ADDR"
-)
-
 func GetAddr() string {
-	addr, ok := os.LookupEnv(envAddr)
+	addr, ok := os.LookupEnv("API_GATE_ADDR")
 	if !ok {
-		panic(envAddr + " is not defined")
+		return "localhost:3000" // Default address.
 	}
 	return addr
 }

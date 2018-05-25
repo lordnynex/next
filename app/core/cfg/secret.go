@@ -1,0 +1,11 @@
+package cfg
+
+import "os"
+
+func GetSecretKey() string {
+	secretKey, ok := os.LookupEnv("UPSALE_SECRET_KEY")
+	if !ok {
+		return "XgK8SELWvdY7HEG9JAbjKgJj39RJJMyq" // Default secret key.
+	}
+	return secretKey
+}
