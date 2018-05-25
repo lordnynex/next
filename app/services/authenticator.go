@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/jwtauth"
 
 	"github.com/sknv/upsale/app/core/models"
-	"github.com/sknv/upsale/app/core/records"
+	"github.com/sknv/upsale/app/core/store"
 )
 
 type contextKey string
@@ -18,11 +18,11 @@ const (
 )
 
 type Authenticator struct {
-	Users *records.User
+	Users *store.User
 }
 
 func NewAuthenticator() *Authenticator {
-	return &Authenticator{Users: records.NewUser()}
+	return &Authenticator{Users: store.NewUser()}
 }
 
 func (a *Authenticator) GetCurrentUser(_ context.Context, r *http.Request,

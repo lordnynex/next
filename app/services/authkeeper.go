@@ -13,7 +13,7 @@ import (
 	"github.com/sknv/upsale/app/core/initializers"
 	"github.com/sknv/upsale/app/core/mailers"
 	"github.com/sknv/upsale/app/core/models"
-	"github.com/sknv/upsale/app/core/records"
+	"github.com/sknv/upsale/app/core/store"
 	xhttp "github.com/sknv/upsale/app/lib/net/http"
 	"github.com/sknv/upsale/app/lib/net/rpc/proto"
 )
@@ -26,8 +26,8 @@ type (
 	AuthKeeper struct {
 		JWTAuth      *jwtauth.JWTAuth
 		LoginMailer  *mailers.Login
-		AuthSessions *records.AuthSession
-		Users        *records.User
+		AuthSessions *store.AuthSession
+		Users        *store.User
 	}
 
 	CreateAuthSessionRequest struct {
@@ -43,8 +43,8 @@ func NewAuthKeeper() *AuthKeeper {
 	return &AuthKeeper{
 		JWTAuth:      initializers.GetJWTAuth(),
 		LoginMailer:  mailers.NewLogin(),
-		AuthSessions: records.NewAuthSession(),
-		Users:        records.NewUser(),
+		AuthSessions: store.NewAuthSession(),
+		Users:        store.NewUser(),
 	}
 }
 

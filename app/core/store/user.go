@@ -1,4 +1,4 @@
-package records
+package store
 
 import (
 	"github.com/globalsign/mgo"
