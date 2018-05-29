@@ -10,7 +10,7 @@ import (
 type (
 	Base struct {
 		CollectionName string
-		MaxLimit       int
+		MaxFetchLimit  int
 	}
 
 	PagingParams struct {
@@ -39,7 +39,7 @@ func (r *Base) FindPage(session *mgo.Session, query bson.M, params PagingParams,
 	qry := r.Find(session, query)
 
 	// Set limit and skip params.
-	limit := r.MaxLimit
+	limit := r.MaxFetchLimit
 	if params.Limit > 0 && params.Limit < limit {
 		limit = params.Limit // Restrict fetching limit.
 	}
