@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 
+	"github.com/sknv/upsale/app/core/initers"
 	"github.com/sknv/upsale/app/gates/api/cfg"
 	"github.com/sknv/upsale/app/gates/api/controllers"
 	xchi "github.com/sknv/upsale/app/lib/chi"
@@ -18,6 +19,8 @@ const (
 )
 
 func main() {
+	defer initers.CloseMongoSession() // Clean up.
+
 	router := chi.NewRouter()
 	xchi.UseDefaultMiddleware(router)
 	xchi.ThrottleAndTimeout(router, concurrentRequestLimit, requestTimeout)

@@ -1,4 +1,4 @@
-package initializers
+package initers
 
 import (
 	"github.com/go-chi/jwtauth"

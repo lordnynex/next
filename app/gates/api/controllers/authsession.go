@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	authRequestLimit = 5 // Per second.
+	authRequestLimit = 1 // Per second.
 )
 
 type AuthSession struct {

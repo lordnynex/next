@@ -4,6 +4,7 @@ import (
 	"github.com/globalsign/mgo"
 
 	"github.com/sknv/upsale/app/core/models"
+	"github.com/sknv/upsale/app/lib/mongo"
 )
 
 type User struct{}
@@ -36,7 +37,7 @@ func (u *User) FindOneOrInsertByEmail(ses *mgo.Session, email string,
 	user, err := u.FindOneByEmail(ses, email)
 	if err == nil {
 		return user, nil // Return a user if one exists.
-	} else if err != mgo.ErrNotFound {
+	} else if !mongo.IsErrNotFound(err) {
 		return nil, err // Return in case of unknown error.
 	}
 

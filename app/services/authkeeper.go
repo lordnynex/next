@@ -10,7 +10,7 @@ import (
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 
-	"github.com/sknv/upsale/app/core/initializers"
+	"github.com/sknv/upsale/app/core/initers"
 	"github.com/sknv/upsale/app/core/mailers"
 	"github.com/sknv/upsale/app/core/models"
 	"github.com/sknv/upsale/app/core/store"
@@ -41,7 +41,7 @@ type (
 
 func NewAuthKeeper() *AuthKeeper {
 	return &AuthKeeper{
-		JWTAuth:      initializers.GetJWTAuth(),
+		JWTAuth:      initers.GetJWTAuth(),
 		LoginMailer:  mailers.NewLogin(),
 		AuthSessions: store.NewAuthSession(),
 		Users:        store.NewUser(),

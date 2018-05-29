@@ -1,4 +1,4 @@
-package initializers
+package initers
 
 import (
 	"github.com/sknv/upsale/app/core/cfg"
