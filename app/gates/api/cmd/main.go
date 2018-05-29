@@ -19,11 +19,13 @@ const (
 )
 
 func main() {
-	defer initers.CloseMongoSession() // Clean up.
+	mongoSession := initers.GetMongoSession()
+	defer mongoSession.Close() // Clean up.
 
 	router := chi.NewRouter()
 	xchi.UseDefaultMiddleware(router)
 	xchi.ThrottleAndTimeout(router, concurrentRequestLimit, requestTimeout)
+	xchi.ProvideMongoSession(router, mongoSession)
 
 	route(router)
 	xhttp.ListenAndServe(cfg.GetAddr(), router, shutdownTimeout)

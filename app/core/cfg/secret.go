@@ -1,6 +1,8 @@
 package cfg
 
-import "os"
+import (
+	"os"
+)
 
 const (
 	defaultSecretKey = "XgK8SELWvdY7HEG9JAbjKgJj39RJJMyq"

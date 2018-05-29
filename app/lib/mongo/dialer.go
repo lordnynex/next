@@ -1,6 +1,8 @@
 package mongo
 
-import "github.com/globalsign/mgo"
+import (
+	"github.com/globalsign/mgo"
+)
 
 func MustDial(dialInfo *mgo.DialInfo) *mgo.Session {
 	session, err := mgo.DialWithInfo(dialInfo)

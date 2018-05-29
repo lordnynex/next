@@ -5,15 +5,17 @@ import (
 
 	"github.com/didip/tollbooth"
 	"github.com/didip/tollbooth_chi"
+	"github.com/globalsign/mgo"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
-	xmiddleware "github.com/sknv/upsale/app/lib/middleware"
+	lib "github.com/sknv/upsale/app/lib/middleware"
+	mongo "github.com/sknv/upsale/app/lib/mongo/middleware"
 )
 
 func UseDefaultMiddleware(router chi.Router) {
 	router.Use(
-		middleware.RealIP, middleware.Logger, middleware.Recoverer, xmiddleware.Recoverer,
+		middleware.RealIP, middleware.Logger, middleware.Recoverer, lib.Recoverer,
 	)
 }
 
@@ -27,4 +29,8 @@ func ThrottleAndTimeout(
 
 func LimitHandler(router chi.Router, requestLimit float64) {
 	router.Use(tollbooth_chi.LimitHandler(tollbooth.NewLimiter(requestLimit, nil)))
+}
+
+func ProvideMongoSession(router chi.Router, session *mgo.Session) {
+	router.Use(mongo.WithMongoSession(session))
 }

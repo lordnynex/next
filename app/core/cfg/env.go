@@ -1,6 +1,8 @@
 package cfg
 
-import "os"
+import (
+	"os"
+)
 
 func IsProduction() bool {
 	return getEnv() == "production"

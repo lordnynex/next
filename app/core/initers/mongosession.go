@@ -22,12 +22,7 @@ func init() {
 	mongoSession = mongo.MustDial(dialInfo)
 }
 
-// GetMongoSession returns a copy of global mgo.Session.
-// Remember to call "defer session.Close()" after calling this function.
+// GetMongoSession returns a global mgo.Session.
 func GetMongoSession() *mgo.Session {
-	return mongoSession.Copy()
-}
-
-func CloseMongoSession() {
-	mongoSession.Close()
+	return mongoSession
 }

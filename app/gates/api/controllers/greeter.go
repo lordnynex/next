@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -28,6 +27,6 @@ func (g *Greeter) Route(router chi.Router) {
 }
 
 func (g *Greeter) Hello(w http.ResponseWriter, r *http.Request) {
-	currentUser, _ := g.Authenticator.GetCurrentUser(context.Background(), r)
+	currentUser, _ := g.Authenticator.GetCurrentUser(r)
 	render.JSON(w, r, render.M{"hello": currentUser.Email})
 }

@@ -3,6 +3,8 @@ package models
 import (
 	"errors"
 	"time"
+
+	"github.com/sknv/upsale/app/lib/mongo/document"
 )
 
 const (
@@ -10,10 +12,10 @@ const (
 )
 
 type AuthSession struct {
-	ID         string    `json:"id"`
-	UserID     string    `json:"user_id"`
-	CreatedAt  time.Time `json:"created_at"`
-	LoggedInAt time.Time `json:"logged_in_at"`
+	document.Timestamper `bson:",inline"`
+
+	UserID     string    `bson:"user_id" json:"user_id"`
+	LoggedInAt time.Time `bson:"logged_in_at" json:"logged_in_at"`
 }
 
 func (a *AuthSession) Validate() error {
