@@ -14,16 +14,16 @@ type (
 	}
 )
 
-func (d *Base) GetID() bson.ObjectId {
-	return d.ID
+func (b *Base) GetID() bson.ObjectId {
+	return b.ID
 }
 
-func (d *Base) BeforeInsert() {
-	d.initID()
+func (b *Base) BeforeInsert() {
+	b.initID()
 }
 
-func (d *Base) initID() {
-	if d.ID == "" {
-		d.ID = bson.NewObjectId()
+func (b *Base) initID() {
+	if b.ID == "" {
+		b.ID = bson.NewObjectId() // Generate ID if one does not exist yet.
 	}
 }
