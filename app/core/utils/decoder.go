@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/render"
 
-	xhttp "github.com/sknv/upsale/app/lib/net/http"
+	xhttp "github.com/sknv/next/app/lib/net/http"
 )
 
 func DecodeRequest(w http.ResponseWriter, r *http.Request, v interface{}) {

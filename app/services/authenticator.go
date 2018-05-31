@@ -7,8 +7,9 @@ import (
 
 	"github.com/go-chi/jwtauth"
 
-	"github.com/sknv/upsale/app/core/models"
-	"github.com/sknv/upsale/app/core/store"
+	"github.com/sknv/next/app/core/models"
+	"github.com/sknv/next/app/core/store"
+	mongo "github.com/sknv/next/app/lib/mongo/middleware"
 )
 
 type contextKey string
@@ -25,8 +26,7 @@ func NewAuthenticator() *Authenticator {
 	return &Authenticator{Users: store.NewUser()}
 }
 
-func (a *Authenticator) GetCurrentUser(_ context.Context, r *http.Request,
-) (*models.User, error) {
+func (a *Authenticator) GetCurrentUser(r *http.Request) (*models.User, error) {
 	currentUser := r.Context().Value(contextKeyCurrentUser)
 	if currentUser != nil {
 		currentUser := currentUser.(*models.User)
@@ -39,7 +39,9 @@ func (a *Authenticator) GetCurrentUser(_ context.Context, r *http.Request,
 		return nil, errors.New("sub claim is empty or not a string")
 	}
 
-	user, err := a.Users.FindOneByID(nil, userID)
+	// Fetch a user from the db.
+	mongoSession := mongo.GetMongoSession(r)
+	user, err := a.Users.FindOneByID(mongoSession, userID)
 	if err != nil {
 		return nil, err
 	}

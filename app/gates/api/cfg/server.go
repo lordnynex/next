@@ -1,6 +1,8 @@
 package cfg
 
-import "os"
+import (
+	"os"
+)
 
 func GetAddr() string {
 	addr, ok := os.LookupEnv("API_GATE_ADDR")

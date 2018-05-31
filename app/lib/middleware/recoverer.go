@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	xhttp "github.com/sknv/upsale/app/lib/net/http"
+	xhttp "github.com/sknv/next/app/lib/net/http"
 )
 
 func Recoverer(next http.Handler) http.Handler {

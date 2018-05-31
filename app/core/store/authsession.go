@@ -1,35 +1,22 @@
 package store
 
 import (
-	"time"
-
 	"github.com/globalsign/mgo"
 
-	"github.com/sknv/upsale/app/core/models"
+	"github.com/sknv/next/app/core/models"
 )
 
-type AuthSession struct{}
+type AuthSession struct {
+	*Base
+}
 
 func NewAuthSession() *AuthSession {
-	return &AuthSession{}
+	return &AuthSession{NewBase("authsessions")}
 }
 
-func (*AuthSession) FindOneByID(_ *mgo.Session, id string) (*models.AuthSession, error) {
-	if id != "abc123" {
-		return nil, mgo.ErrNotFound
-	}
-	return &models.AuthSession{
-		ID:        "abc123",
-		UserID:    "abc123",
-		CreatedAt: time.Now().Add(-10 * time.Minute),
-	}, nil
-}
-
-func (*AuthSession) Insert(_ *mgo.Session, authSession *models.AuthSession) error {
-	authSession.ID = "abc123"
-	return nil
-}
-
-func (*AuthSession) UpdateDoc(_ *mgo.Session, authSession *models.AuthSession) error {
-	return nil
+func (a *AuthSession) FindOneByID(session *mgo.Session, id string,
+) (*models.AuthSession, error) {
+	result := &models.AuthSession{}
+	err := a.Base.FindOneById(session, id, result)
+	return result, err
 }

@@ -1,3 +1,3 @@
-# upsale
+# next
 
-Upsale is an e-commerce platform.
+Next is a project template for your next web application.

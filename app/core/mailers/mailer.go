@@ -6,12 +6,12 @@ import (
 
 	"github.com/jordan-wright/email"
 
-	"github.com/sknv/upsale/app/core/cfg"
-	"github.com/sknv/upsale/app/core/initializers"
+	"github.com/sknv/next/app/core/cfg"
+	"github.com/sknv/next/app/core/initers"
 )
 
 const (
-	From = "Upsale Mailer <sail.notification@yandex.ru>"
+	From = "Next Mailer <example@gmail.com>"
 )
 
 type Mailer struct {
@@ -31,7 +31,7 @@ func NewMailer() *Mailer {
 }
 
 func (m *Mailer) ExecuteTemplate(name string, data interface{}) []byte {
-	bytes, err := initializers.GetHTML().ExecuteTemplateToBytes(name, data)
+	bytes, err := initers.GetHTML().ExecuteTemplateToBytes(name, data)
 	if err != nil {
 		panic(err)
 	}

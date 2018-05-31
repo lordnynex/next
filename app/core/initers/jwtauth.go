@@ -1,9 +1,9 @@
-package initializers
+package initers
 
 import (
 	"github.com/go-chi/jwtauth"
 
-	"github.com/sknv/upsale/app/core/cfg"
+	"github.com/sknv/next/app/core/cfg"
 )
 
 const (

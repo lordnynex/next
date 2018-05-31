@@ -1,21 +1,21 @@
 package controllers
 
 import (
-	"context"
 	"log"
 	"net/http"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	"github.com/sknv/upsale/app/core/utils"
-	xchi "github.com/sknv/upsale/app/lib/chi"
-	xhttp "github.com/sknv/upsale/app/lib/net/http"
-	"github.com/sknv/upsale/app/services"
+	"github.com/sknv/next/app/core/utils"
+	xchi "github.com/sknv/next/app/lib/chi"
+	mongo "github.com/sknv/next/app/lib/mongo/middleware"
+	xhttp "github.com/sknv/next/app/lib/net/http"
+	"github.com/sknv/next/app/services"
 )
 
 const (
-	authRequestLimit = 5 // Per second.
+	authRequestLimit = 1 // Per second.
 )
 
 type AuthSession struct {
@@ -28,7 +28,7 @@ func NewAuthSession() *AuthSession {
 
 func (a *AuthSession) Route(router chi.Router) {
 	router.Route("/login", func(r chi.Router) {
-		xchi.LimitHandler(router, authRequestLimit)
+		xchi.LimitHandler(r, authRequestLimit)
 
 		r.Post("/", a.Create)
 		r.Post("/{authsessionid}", a.Login)
@@ -37,7 +37,8 @@ func (a *AuthSession) Route(router chi.Router) {
 
 func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 	req := a.decodeCreateRequest(w, r)
-	if _, err := a.AuthKeeper.CreateAuthSession(context.Background(), req); err != nil {
+	mongoSession := mongo.GetMongoSession(r)
+	if err := a.AuthKeeper.CreateAuthSession(mongoSession, req); err != nil {
 		log.Print("[ERROR] create auth session: ", err)
 		err := err.(*xhttp.ErrHttpStatus)
 		if err.Status != http.StatusInternalServerError {
@@ -53,7 +54,8 @@ func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 
 func (a *AuthSession) Login(w http.ResponseWriter, r *http.Request) {
 	authSessionID := chi.URLParam(r, "authsessionid")
-	resp, err := a.AuthKeeper.Login(context.Background(), authSessionID)
+	mongoSession := mongo.GetMongoSession(r)
+	resp, err := a.AuthKeeper.Login(mongoSession, authSessionID)
 	if err != nil {
 		log.Print("[ERROR] login: ", err)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)

@@ -1,21 +1,20 @@
 package services
 
 import (
-	"context"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/globalsign/mgo"
 	"github.com/go-chi/jwtauth"
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 
-	"github.com/sknv/upsale/app/core/initializers"
-	"github.com/sknv/upsale/app/core/mailers"
-	"github.com/sknv/upsale/app/core/models"
-	"github.com/sknv/upsale/app/core/store"
-	xhttp "github.com/sknv/upsale/app/lib/net/http"
-	"github.com/sknv/upsale/app/lib/net/rpc/proto"
+	"github.com/sknv/next/app/core/initers"
+	"github.com/sknv/next/app/core/mailers"
+	"github.com/sknv/next/app/core/models"
+	"github.com/sknv/next/app/core/store"
+	xhttp "github.com/sknv/next/app/lib/net/http"
 )
 
 const (
@@ -41,7 +40,7 @@ type (
 
 func NewAuthKeeper() *AuthKeeper {
 	return &AuthKeeper{
-		JWTAuth:      initializers.GetJWTAuth(),
+		JWTAuth:      initers.GetJWTAuth(),
 		LoginMailer:  mailers.NewLogin(),
 		AuthSessions: store.NewAuthSession(),
 		Users:        store.NewUser(),
@@ -49,31 +48,33 @@ func NewAuthKeeper() *AuthKeeper {
 }
 
 // CreateAuthSession creates a user account if one does not exist yet and stores an auth session.
-func (a *AuthKeeper) CreateAuthSession(_ context.Context, r *CreateAuthSessionRequest,
-) (*proto.Empty, error) {
+func (a *AuthKeeper) CreateAuthSession(
+	mongoSession *mgo.Session, r *CreateAuthSessionRequest,
+) error {
 	if err := r.Validate(); err != nil {
-		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusUnprocessableEntity}
+		return &xhttp.ErrHttpStatus{Err: err, Status: http.StatusUnprocessableEntity}
 	}
 
 	// Create an account if one does not exist yet.
-	user, err := a.Users.FindOneOrInsertByEmail(nil, r.Email)
+	user, err := a.Users.FindOneOrInsertByEmail(mongoSession, r.Email)
 	if err != nil {
-		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
+		return &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
 	}
 
-	authSession := &models.AuthSession{UserID: user.ID}
-	if err := a.AuthSessions.Insert(nil, authSession); err != nil {
-		return nil, &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
+	authSession := &models.AuthSession{UserID: user.ID.Hex()}
+	if err := a.AuthSessions.Insert(mongoSession, authSession); err != nil {
+		return &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
 	}
 
-	go a.LoginMailer.Deliver(authSession.ID, user.Email) // Deliver later.
-	return nil, nil
+	go a.LoginMailer.Deliver(authSession.ID.Hex(), user.Email) // Deliver later.
+	return nil
 }
 
-// Login validates an auth session and in case of a successful validation returns an auth token.
-func (a *AuthKeeper) Login(_ context.Context, authSessionID string,
+// Login validates an auth session and
+// returns an auth token in case of a successful validation.
+func (a *AuthKeeper) Login(mongoSession *mgo.Session, authSessionID string,
 ) (*LoginResponse, error) {
-	authSession, err := a.AuthSessions.FindOneByID(nil, authSessionID)
+	authSession, err := a.AuthSessions.FindOneByID(mongoSession, authSessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +84,7 @@ func (a *AuthKeeper) Login(_ context.Context, authSessionID string,
 	}
 
 	authSession.LogIn()
-	if err := a.AuthSessions.UpdateDoc(nil, authSession); err != nil {
+	if err := a.AuthSessions.UpdateDoc(mongoSession, authSession); err != nil {
 		return nil, err
 	}
 
