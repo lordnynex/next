@@ -6,8 +6,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	"github.com/sknv/upsale/app/core/utils"
-	"github.com/sknv/upsale/app/services"
+	"github.com/sknv/next/app/core/utils"
+	"github.com/sknv/next/app/services"
 )
 
 type Greeter struct {

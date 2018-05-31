@@ -4,8 +4,8 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 
-	"github.com/sknv/upsale/app/core/models"
-	"github.com/sknv/upsale/app/lib/mongo"
+	"github.com/sknv/next/app/core/models"
+	"github.com/sknv/next/app/lib/mongo"
 )
 
 type User struct {

@@ -9,7 +9,7 @@ const (
 )
 
 func GetSecretKey() string {
-	secretKey, ok := os.LookupEnv("UPSALE_SECRET_KEY")
+	secretKey, ok := os.LookupEnv("NEXT_SECRET_KEY")
 	if !ok {
 		return defaultSecretKey
 	}

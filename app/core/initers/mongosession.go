@@ -3,8 +3,8 @@ package initers
 import (
 	"github.com/globalsign/mgo"
 
-	"github.com/sknv/upsale/app/core/cfg"
-	"github.com/sknv/upsale/app/lib/mongo"
+	"github.com/sknv/next/app/core/cfg"
+	"github.com/sknv/next/app/lib/mongo"
 )
 
 var (

@@ -9,7 +9,7 @@ func IsProduction() bool {
 }
 
 func getEnv() string {
-	env, ok := os.LookupEnv("UPSALE_ENV")
+	env, ok := os.LookupEnv("NEXT_ENV")
 	if !ok {
 		return "development" // Default application env.
 	}

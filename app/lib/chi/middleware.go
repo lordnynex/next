@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
-	lib "github.com/sknv/upsale/app/lib/middleware"
-	mongo "github.com/sknv/upsale/app/lib/mongo/middleware"
+	lib "github.com/sknv/next/app/lib/middleware"
+	mongo "github.com/sknv/next/app/lib/mongo/middleware"
 )
 
 func UseDefaultMiddleware(router chi.Router) {

@@ -9,11 +9,11 @@ import (
 const (
 	defaultMongoTimeout = 60 * time.Second
 
-	envMongoAddrs    = "UPSALE_MONGO_ADDRS"
-	envMongoDatabase = "UPSALE_MONGO_DATABASE"
-	envMongoUsername = "UPSALE_MONGO_USERNAME"
-	envMongoPassword = "UPSALE_MONGO_PASSWORD"
-	envMongoTimeout  = "UPSALE_MONGO_TIMEOUT"
+	envMongoAddrs    = "NEXT_MONGO_ADDRS"
+	envMongoDatabase = "NEXT_MONGO_DATABASE"
+	envMongoUsername = "NEXT_MONGO_USERNAME"
+	envMongoPassword = "NEXT_MONGO_PASSWORD"
+	envMongoTimeout  = "NEXT_MONGO_TIMEOUT"
 )
 
 func GetMongoAddrs() []string {

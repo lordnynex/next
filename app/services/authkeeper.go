@@ -10,11 +10,11 @@ import (
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 
-	"github.com/sknv/upsale/app/core/initers"
-	"github.com/sknv/upsale/app/core/mailers"
-	"github.com/sknv/upsale/app/core/models"
-	"github.com/sknv/upsale/app/core/store"
-	xhttp "github.com/sknv/upsale/app/lib/net/http"
+	"github.com/sknv/next/app/core/initers"
+	"github.com/sknv/next/app/core/mailers"
+	"github.com/sknv/next/app/core/models"
+	"github.com/sknv/next/app/core/store"
+	xhttp "github.com/sknv/next/app/lib/net/http"
 )
 
 const (

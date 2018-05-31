@@ -7,11 +7,11 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	"github.com/sknv/upsale/app/core/utils"
-	xchi "github.com/sknv/upsale/app/lib/chi"
-	mongo "github.com/sknv/upsale/app/lib/mongo/middleware"
-	xhttp "github.com/sknv/upsale/app/lib/net/http"
-	"github.com/sknv/upsale/app/services"
+	"github.com/sknv/next/app/core/utils"
+	xchi "github.com/sknv/next/app/lib/chi"
+	mongo "github.com/sknv/next/app/lib/mongo/middleware"
+	xhttp "github.com/sknv/next/app/lib/net/http"
+	"github.com/sknv/next/app/services"
 )
 
 const (

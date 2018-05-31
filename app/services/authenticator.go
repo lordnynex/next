@@ -7,9 +7,9 @@ import (
 
 	"github.com/go-chi/jwtauth"
 
-	"github.com/sknv/upsale/app/core/models"
-	"github.com/sknv/upsale/app/core/store"
-	mongo "github.com/sknv/upsale/app/lib/mongo/middleware"
+	"github.com/sknv/next/app/core/models"
+	"github.com/sknv/next/app/core/store"
+	mongo "github.com/sknv/next/app/lib/mongo/middleware"
 )
 
 type contextKey string

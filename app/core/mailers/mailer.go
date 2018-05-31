@@ -6,12 +6,12 @@ import (
 
 	"github.com/jordan-wright/email"
 
-	"github.com/sknv/upsale/app/core/cfg"
-	"github.com/sknv/upsale/app/core/initers"
+	"github.com/sknv/next/app/core/cfg"
+	"github.com/sknv/next/app/core/initers"
 )
 
 const (
-	From = "Upsale Mailer <sail.notification@yandex.ru>"
+	From = "Next Mailer <example@gmail.com>"
 )
 
 type Mailer struct {

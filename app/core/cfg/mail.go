@@ -8,10 +8,10 @@ import (
 const (
 	MailBaseUrl = "http://localhost:3000"
 
-	envMailHost     = "UPSALE_MAIL_HOST"
-	envMailPort     = "UPSALE_MAIL_PORT"
-	envMailUsername = "UPSALE_MAIL_USERNAME"
-	envMailPassword = "UPSALE_MAIL_PASSWORD"
+	envMailHost     = "NEXT_MAIL_HOST"
+	envMailPort     = "NEXT_MAIL_PORT"
+	envMailUsername = "NEXT_MAIL_USERNAME"
+	envMailPassword = "NEXT_MAIL_PASSWORD"
 )
 
 func GetMailAddr() string {

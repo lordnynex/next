@@ -4,7 +4,7 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 
-	"github.com/sknv/upsale/app/lib/mongo/document"
+	"github.com/sknv/next/app/lib/mongo/document"
 )
 
 type (

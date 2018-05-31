@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/jordan-wright/email"
 
-	"github.com/sknv/upsale/app/core/cfg"
+	"github.com/sknv/next/app/core/cfg"
 )
 
 type Login struct {

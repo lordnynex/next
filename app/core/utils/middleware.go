@@ -4,8 +4,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/jwtauth"
 
-	"github.com/sknv/upsale/app/core/initers"
-	core "github.com/sknv/upsale/app/core/middleware"
+	"github.com/sknv/next/app/core/initers"
+	core "github.com/sknv/next/app/core/middleware"
 )
 
 func RequireLogin(router chi.Router) {

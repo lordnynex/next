@@ -3,7 +3,7 @@ package store
 import (
 	"github.com/globalsign/mgo"
 
-	"github.com/sknv/upsale/app/core/models"
+	"github.com/sknv/next/app/core/models"
 )
 
 type AuthSession struct {

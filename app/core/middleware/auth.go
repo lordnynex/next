@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/sknv/upsale/app/services"
+	"github.com/sknv/next/app/services"
 )
 
 func CurrentUserVerifier(next http.Handler) http.Handler {

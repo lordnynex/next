@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/sknv/upsale/app/lib/mongo/store"
+	"github.com/sknv/next/app/lib/mongo/store"
 )
 
 const maxFetchLimit = 25

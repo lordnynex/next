@@ -1,8 +1,8 @@
 package initers
 
 import (
-	"github.com/sknv/upsale/app/core/cfg"
-	xtemplate "github.com/sknv/upsale/app/lib/html/template"
+	"github.com/sknv/next/app/core/cfg"
+	xtemplate "github.com/sknv/next/app/lib/html/template"
 )
 
 const (

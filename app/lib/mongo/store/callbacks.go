@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/sknv/upsale/app/lib/mongo/document"
+	"github.com/sknv/next/app/lib/mongo/document"
 )
 
 func doBeforeInsertIfNeeded(doc interface{}) {
