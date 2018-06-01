@@ -1,4 +1,4 @@
-{{ define "layouts/header" }}
+{{ define "layout/header" }}
 <!doctype html>
 <html lang="ru">
 <head>
