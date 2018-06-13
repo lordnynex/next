@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:3.6-jessie
+    env_file:
+      - .env
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db:/app/db
+      - mongodata:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongodata:

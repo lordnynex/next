@@ -1,4 +1,4 @@
-// Bootstrap the Mongo database.
+// Init a Mongo database.
 
 //
 // Create indexes.
@@ -7,5 +7,5 @@
 db.users.createIndex({ email: 1 }, { unique: true });
 
 //
-// Seed the db.
+// Seed a database.
 //

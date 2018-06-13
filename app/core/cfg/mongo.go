@@ -7,12 +7,14 @@ import (
 )
 
 const (
+	// Authenticate against the "admin" database in a docker container.
+	authDB              = "admin"
 	defaultMongoTimeout = 60 * time.Second
 
 	envMongoAddrs    = "NEXT_MONGO_ADDRS"
-	envMongoDatabase = "NEXT_MONGO_DATABASE"
-	envMongoUsername = "NEXT_MONGO_USERNAME"
-	envMongoPassword = "NEXT_MONGO_PASSWORD"
+	envMongoDatabase = "MONGO_INITDB_DATABASE"
+	envMongoUsername = "MONGO_INITDB_ROOT_USERNAME"
+	envMongoPassword = "MONGO_INITDB_ROOT_PASSWORD"
 	envMongoTimeout  = "NEXT_MONGO_TIMEOUT"
 )
 
@@ -22,6 +24,10 @@ func GetMongoAddrs() []string {
 		panic(envMongoAddrs + " is not defined")
 	}
 	return strings.Split(addrs, ",")
+}
+
+func GetMongoSource() string {
+	return authDB
 }
 
 func GetMongoDatabase() string {
