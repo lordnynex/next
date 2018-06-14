@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	MailBaseUrl = "http://localhost:8080" // TODO: define a production domain.
+	MailBaseUrl = "http://localhost:3000" // TODO: define a production domain.
 
 	envMailHost     = "APP_MAIL_HOST"
 	envMailPort     = "APP_MAIL_PORT"
