@@ -17,6 +17,8 @@ type User struct {
 }
 
 func (u *User) BeforeInsert() {
+	u.Timestamper.BeforeInsert()
+
 	if u.Role == "" {
 		u.Role = defaultUserRole // Set default role if one does not exist yet.
 	}
