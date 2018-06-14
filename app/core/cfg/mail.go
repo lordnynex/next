@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	MailBaseUrl = "http://localhost:3000"
+	MailBaseUrl = "http://localhost:3000" // TODO: define a production domain.
 
-	envMailHost     = "NEXT_MAIL_HOST"
-	envMailPort     = "NEXT_MAIL_PORT"
-	envMailUsername = "NEXT_MAIL_USERNAME"
-	envMailPassword = "NEXT_MAIL_PASSWORD"
+	envMailHost     = "APP_MAIL_HOST"
+	envMailPort     = "APP_MAIL_PORT"
+	envMailUsername = "APP_MAIL_USERNAME"
+	envMailPassword = "APP_MAIL_PASSWORD"
 )
 
 func GetMailAddr() string {

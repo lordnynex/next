@@ -33,5 +33,5 @@ func main() {
 
 func route(router chi.Router) {
 	controllers.NewAuthSession().Route(router)
-	controllers.NewGreeter().Route(router)
+	controllers.NewUser().Route(router)
 }

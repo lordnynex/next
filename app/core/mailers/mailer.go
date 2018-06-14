@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	From = "Next Mailer <example@gmail.com>"
+	From = "Application Mailer <example@gmail.com>"
 )
 
 type Mailer struct {

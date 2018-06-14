@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:3.6-jessie
+    env_file:
+      - .env
+    volumes:
+      - ./db:/app/db
+      - mongodata:/data/db
+
+  app:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  logrotate:
+    image: blacklabelops/logrotate:1.2
+    environment:
+      - LOGS_DIRECTORIES=/app/log
+      - LOGROTATE_INTERVAL=weekly
+      - LOGROTATE_COPIES=10
+      - LOGROTATE_COMPRESSION=compress
+    volumes:
+      - ./log:/app/log
+    restart: unless-stopped
+
+volumes:
+  mongodata:

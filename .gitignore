@@ -15,5 +15,6 @@
 log/*
 !log/.keep
 
-# Ignore environment variables.
+# Ignore environment variables and docker-compose file.
 .env
+docker-compose.yml

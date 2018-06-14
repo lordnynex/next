@@ -14,6 +14,7 @@ var (
 func init() {
 	dialInfo := &mgo.DialInfo{
 		Addrs:    cfg.GetMongoAddrs(),
+		Source:   cfg.GetMongoSource(),
 		Database: cfg.GetMongoDatabase(),
 		Username: cfg.GetMongoUsername(),
 		Password: cfg.GetMongoPassword(),
