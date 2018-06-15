@@ -7,7 +7,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	"github.com/sknv/next/app/core/utils"
 	xchi "github.com/sknv/next/app/lib/chi"
 	mongo "github.com/sknv/next/app/lib/mongo/middleware"
 	xhttp "github.com/sknv/next/app/lib/net/http"
@@ -18,28 +17,28 @@ const (
 	authRequestLimit = 1 // Per second.
 )
 
-type AuthSession struct {
+type Auth struct {
 	AuthKeeper *services.AuthKeeper
 }
 
-func NewAuthSession() *AuthSession {
-	return &AuthSession{AuthKeeper: services.NewAuthKeeper()}
+func NewAuth() *Auth {
+	return &Auth{AuthKeeper: services.NewAuthKeeper()}
 }
 
-func (a *AuthSession) Route(router chi.Router) {
-	router.Route("/login", func(r chi.Router) {
+func (a *Auth) Route(router chi.Router) {
+	router.Route("/auth", func(r chi.Router) {
 		xchi.LimitHandler(r, authRequestLimit)
 
 		r.Post("/", a.Create)
-		r.Post("/{authsessionid}", a.Login)
+		r.Post("/login", a.Login)
 	})
 }
 
-func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
+func (a *Auth) Create(w http.ResponseWriter, r *http.Request) {
 	req := a.decodeCreateRequest(w, r)
 	mongoSession := mongo.GetMongoSession(r)
-	if err := a.AuthKeeper.CreateAuthSession(mongoSession, req); err != nil {
-		log.Print("[ERROR] create auth session: ", err)
+	if err := a.AuthKeeper.CreateAuth(mongoSession, req); err != nil {
+		log.Print("[ERROR] create auth: ", err)
 		err := err.(*xhttp.ErrHttpStatus)
 		if err.Status != http.StatusInternalServerError {
 			render.Status(r, err.Status)
@@ -52,10 +51,10 @@ func (a *AuthSession) Create(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (a *AuthSession) Login(w http.ResponseWriter, r *http.Request) {
-	authSessionID := chi.URLParam(r, "authsessionid")
+func (a *Auth) Login(w http.ResponseWriter, r *http.Request) {
+	req := a.decodeLoginRequest(w, r)
 	mongoSession := mongo.GetMongoSession(r)
-	resp, err := a.AuthKeeper.Login(mongoSession, authSessionID)
+	resp, err := a.AuthKeeper.Login(mongoSession, req)
 	if err != nil {
 		log.Print("[ERROR] login: ", err)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
@@ -66,9 +65,16 @@ func (a *AuthSession) Login(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, resp)
 }
 
-func (*AuthSession) decodeCreateRequest(w http.ResponseWriter, r *http.Request,
-) *services.CreateAuthSessionRequest {
-	req := &services.CreateAuthSessionRequest{}
-	utils.DecodeRequest(w, r, req)
+func (*Auth) decodeCreateRequest(w http.ResponseWriter, r *http.Request,
+) *services.CreateAuthRequest {
+	req := &services.CreateAuthRequest{}
+	xchi.DecodeRequest(w, r, req)
+	return req
+}
+
+func (*Auth) decodeLoginRequest(w http.ResponseWriter, r *http.Request,
+) *services.LoginRequest {
+	req := &services.LoginRequest{}
+	xchi.DecodeRequest(w, r, req)
 	return req
 }

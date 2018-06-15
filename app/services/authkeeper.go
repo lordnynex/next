@@ -12,45 +12,45 @@ import (
 
 	"github.com/sknv/next/app/core/initers"
 	"github.com/sknv/next/app/core/mailers"
-	"github.com/sknv/next/app/core/models"
 	"github.com/sknv/next/app/core/store"
 	xhttp "github.com/sknv/next/app/lib/net/http"
 )
 
 const (
-	exp = 90 * 24 * time.Hour // Expires in 90 days.
+	exp = 90 * 24 * time.Hour // Auth session expires in 90 days.
 )
 
 type (
 	AuthKeeper struct {
-		JWTAuth      *jwtauth.JWTAuth
-		LoginMailer  *mailers.Login
-		AuthSessions *store.AuthSession
-		Users        *store.User
+		JWTAuth     *jwtauth.JWTAuth
+		LoginMailer *mailers.Login
+		Users       *store.User
 	}
 
-	CreateAuthSessionRequest struct {
+	CreateAuthRequest struct {
 		Email string `json:"email"`
 	}
 
+	LoginRequest struct {
+		Email string `json:"email"`
+		Code  string `json:"code"`
+	}
+
 	LoginResponse struct {
-		AuthToken string `json:"auth_token"`
+		AuthToken string `json:"authtoken"`
 	}
 )
 
 func NewAuthKeeper() *AuthKeeper {
 	return &AuthKeeper{
-		JWTAuth:      initers.GetJWTAuth(),
-		LoginMailer:  mailers.NewLogin(),
-		AuthSessions: store.NewAuthSession(),
-		Users:        store.NewUser(),
+		JWTAuth:     initers.GetJWTAuth(),
+		LoginMailer: mailers.NewLogin(),
+		Users:       store.NewUser(),
 	}
 }
 
-// CreateAuthSession creates a user account if one does not exist yet and stores an auth session.
-func (a *AuthKeeper) CreateAuthSession(
-	mongoSession *mgo.Session, r *CreateAuthSessionRequest,
-) error {
+// CreateAuth creates a user account if one does not exist yet and stores an auth session.
+func (a *AuthKeeper) CreateAuth(mongoSession *mgo.Session, r *CreateAuthRequest) error {
 	if err := r.Validate(); err != nil {
 		return &xhttp.ErrHttpStatus{Err: err, Status: http.StatusUnprocessableEntity}
 	}
@@ -61,35 +61,34 @@ func (a *AuthKeeper) CreateAuthSession(
 		return &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
 	}
 
-	authSession := &models.AuthSession{UserID: user.ID.Hex()}
-	if err := a.AuthSessions.Insert(mongoSession, authSession); err != nil {
+	user.GenerateCode()
+	if err := a.Users.UpdateDoc(mongoSession, user); err != nil {
 		return &xhttp.ErrHttpStatus{Err: err, Status: http.StatusInternalServerError}
 	}
 
-	go a.LoginMailer.Deliver(authSession.ID.Hex(), user.Email) // Deliver later.
+	go a.LoginMailer.Deliver(user) // Deliver later.
 	return nil
 }
 
-// Login validates an auth session and
-// returns an auth token in case of a successful validation.
-func (a *AuthKeeper) Login(mongoSession *mgo.Session, authSessionID string,
+// Login authenticates an auth session.
+func (a *AuthKeeper) Login(mongoSession *mgo.Session, r *LoginRequest,
 ) (*LoginResponse, error) {
-	authSession, err := a.AuthSessions.FindOneByID(mongoSession, authSessionID)
+	user, err := a.Users.FindOneByEmail(mongoSession, r.Email)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := authSession.Validate(); err != nil {
+	if err := user.Authenticate(r.Code); err != nil {
 		return nil, err
 	}
 
-	authSession.LogIn()
-	if err := a.AuthSessions.UpdateDoc(mongoSession, authSession); err != nil {
+	user.LogIn()
+	if err := a.Users.UpdateDoc(mongoSession, user); err != nil {
 		return nil, err
 	}
 
 	_, tokenString, err := a.JWTAuth.Encode(
-		jwtauth.Claims{"sub": authSession.UserID, "exp": time.Now().Add(exp).Unix()},
+		jwtauth.Claims{"sub": user.ID.Hex(), "exp": time.Now().Add(exp).Unix()},
 	)
 	if err != nil {
 		return nil, err
@@ -101,7 +100,7 @@ func (a *AuthKeeper) Login(mongoSession *mgo.Session, authSessionID string,
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-func (r *CreateAuthSessionRequest) Validate() error {
+func (r *CreateAuthRequest) Validate() error {
 	r.Email = strings.ToLower(strings.TrimSpace(r.Email))
 	return validation.ValidateStruct(
 		r,

@@ -5,13 +5,15 @@ import (
 )
 
 const (
+	defaultAddr = "localhost:8080"
+
 	envGateAddr = "API_GATE_ADDR"
 )
 
 func GetAddr() string {
 	addr, ok := os.LookupEnv(envGateAddr)
 	if !ok {
-		return "localhost:8080" // Default address.
+		return defaultAddr
 	}
 	return addr
 }
