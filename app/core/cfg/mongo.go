@@ -7,6 +7,8 @@ import (
 )
 
 const (
+	defaultMongoTimeout = 60 * time.Second
+
 	envMongoAddrs    = "APP_MONGO_ADDRS"
 	envMongoDatabase = "MONGO_INITDB_DATABASE"
 	envMongoUsername = "MONGO_INITDB_ROOT_USERNAME"
@@ -54,7 +56,7 @@ func GetMongoPassword() string {
 func GetMongoTimeout() time.Duration {
 	duration, ok := os.LookupEnv(envMongoTimeout)
 	if !ok {
-		return 60 * time.Second // Default Mongo timeout.
+		return defaultMongoTimeout
 	}
 
 	timeout, err := time.ParseDuration(duration)

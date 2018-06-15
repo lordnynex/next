@@ -5,6 +5,8 @@ import (
 )
 
 const (
+	defaultEnv = "development"
+
 	envEnv = "APP_ENV"
 )
 
@@ -15,7 +17,7 @@ func IsProduction() bool {
 func getEnv() string {
 	env, ok := os.LookupEnv(envEnv)
 	if !ok {
-		return "development" // Default application env.
+		return defaultEnv
 	}
 	return env
 }

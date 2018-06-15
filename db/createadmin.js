@@ -1,16 +1,15 @@
 // Create an application user.
 
 db.users.update(
-  { email: "admin@example.com" },
+  { email: 'admin@example.com' },
   {
-    "$set": {
+    $set: {
       updated_at: new Date()
     },
-    "$setOnInsert": {
+    $setOnInsert: {
       created_at: new Date(),
-      name: "",
-      role: "admin"
+      role: 'admin'
     }
   },
   { upsert: true }
-)
+);
