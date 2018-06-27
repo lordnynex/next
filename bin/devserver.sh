@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Run the development server.
-
-# Move to the application root dir.
-cd ..
+# Usage example: bin/devserver.sh
 
 # Load environment variables from .env file.
 set -a; [ -f .env ] && . .env; set +a
